@@ -19,18 +19,18 @@ export default function TopicForm({ onAdded }: TopicFormProps) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-xl p-6 border border-gray-200">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
+    <div className="bg-white shadow-md rounded-xl p-4 md:p-6 border border-gray-200">
+      <h2 className="text-xl md:text-2xl font-semibold mb-4 text-gray-800">
         Add Topic
       </h2>
 
-      <div className="flex gap-3">
+      <div className="flex gap-2 md:gap-3">
         <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter topic name..."
               className="
-                flex-grow px-4 py-2 rounded-lg
+                min-w-0 flex-1 px-3 md:px-4 py-2 rounded-lg
                 border border-gray-300
                 focus:border-gray-500
                 focus:ring-0
@@ -40,10 +40,9 @@ export default function TopicForm({ onAdded }: TopicFormProps) {
               "
             />
 
-
         <button
           onClick={addTopic}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium transition-all"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-2 md:py-3 rounded-lg font-medium transition-all shrink-0"
         >
           Add
         </button>
