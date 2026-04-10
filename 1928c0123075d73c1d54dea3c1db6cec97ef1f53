@@ -1,0 +1,25 @@
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 141,145,152,155-171,203,211,214-227
+frontend/components/TopicScheduleEditor.tsx
+  2a76a59fc03bf81e 231,235,243,251
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "1928c0123075d73c1d54dea3c1db6cec97ef1f53",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 40,
+      "total_deletions": 36,
+      "accepted_lines": 40,
+      "overriden_lines": 0
+    }
+  }
+}
