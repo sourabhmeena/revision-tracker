@@ -1,0 +1,79 @@
+frontend/components/ConfirmModal.tsx
+  2a76a59fc03bf81e 1-60
+frontend/components/ProgressBar.tsx
+  2a76a59fc03bf81e 14
+frontend/components/TopicScheduleEditor.tsx
+  2a76a59fc03bf81e 97,100,103-104
+frontend/components/DayRing.tsx
+  2a76a59fc03bf81e 7,12,16-22,41,61
+frontend/components/CalendarGrid.tsx
+  2a76a59fc03bf81e 84,110,117,137,141,154-157,159,171
+frontend/app/topics/[id]/page.tsx
+  2a76a59fc03bf81e 1-270
+frontend/components/InputModal.tsx
+  2a76a59fc03bf81e 1-76
+frontend/components/Navigation.tsx
+  2a76a59fc03bf81e 6,11,37,40,54,62-68,81-100,106,116,125,130
+backend/models.py
+  2a76a59fc03bf81e 56-58
+frontend/hooks/useDarkMode.ts
+  2a76a59fc03bf81e 1-33
+frontend/components/DateModal.tsx
+  2a76a59fc03bf81e 26,28,32,42,49
+frontend/app/calendar/page.tsx
+  2a76a59fc03bf81e 12-13,21,24,27,32,36-37,40,42,46,50,54,58,62
+frontend/app/login/page.tsx
+  2a76a59fc03bf81e 27
+frontend/app/types.ts
+  2a76a59fc03bf81e 5-7,29-31
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 103,106,109,119-120,123,127,134,136,154,162,171,175,179-180,198,206-208,215,224,228,232,237-239,246,251,277,286,294-295
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 3-4,7-8,14,21-23,25-26,29-85,91-96,98-99,102-104,112-117,120-122,124-126,130-131,133,135-137,139,142-145,148-149,151-152,154,160-162,168-170,184,188,191,206-207,210-239,242,250-251,253,262-307,313-314,317,329,332,335-375,377,380,386,395-419,430,434,440,448,455,461-462,468-469,483-484,487,536-573
+frontend/app/page.tsx
+  2a76a59fc03bf81e 6,14-15,23,34,39,42,46,49,57,60,64,67,75,78,82,85,93-94,97,102-104,108
+frontend/hooks/useAPI.ts
+  2a76a59fc03bf81e 3,7-10,37-41,46-47
+frontend/app/layout.tsx
+  2a76a59fc03bf81e 40-47,49-50
+frontend/components/TopicChecklist.tsx
+  2a76a59fc03bf81e 53,61-62
+frontend/components/MonthYearPicker.tsx
+  2a76a59fc03bf81e 49,65,67,82,93,108
+frontend/app/list/page.tsx
+  2a76a59fc03bf81e 15-16,24,27,30
+frontend/components/LoginForm.tsx
+  2a76a59fc03bf81e 54,58-59,63,68-69,78-79,102,110
+frontend/app/globals.css
+  2a76a59fc03bf81e 3,12-14,17-19
+backend/schemas.py
+  2a76a59fc03bf81e 16-18,22-25
+frontend/components/TodayWidget.tsx
+  2a76a59fc03bf81e 1-99
+backend/main.py
+  2a76a59fc03bf81e 90-95,98-107,343-345,359-365,370-376,378-385,417-419,442-458,462-471,700-702
+frontend/components/TopicForm.tsx
+  2a76a59fc03bf81e 3-4,6,9,11-16,20-21,23-41,44-57,59-60,64-92,95-97,99,101-126,128-150
+frontend/components/UpcomingList.tsx
+  2a76a59fc03bf81e 3,9,13-14,21-43,67-69,71,80,83-102,104-114,120-123,139,147,149-152,160,172-175,179,184,188,193,219-220,251,265-266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "768bc1bacd5f53cd8c93f8a827cfda7a1a1cca8e",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 1551,
+      "total_deletions": 480,
+      "accepted_lines": 1368,
+      "overriden_lines": 0
+    }
+  }
+}
