@@ -1,0 +1,23 @@
+.github/workflows/db-backup.yml
+  2a76a59fc03bf81e 18,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "a31a4a9e3aa5252e16f4a6523e54092a3dffb38b",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 1,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
