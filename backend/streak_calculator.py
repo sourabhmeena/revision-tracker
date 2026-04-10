@@ -4,7 +4,7 @@ Streak calculation utility for tracking consecutive days of completed revisions.
 
 from datetime import date, timedelta
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, cast, Integer
 
 try:
     from .models import Revision, Topic
@@ -39,7 +39,7 @@ def calculate_streaks(db: Session, user_id: str) -> dict:
         db.query(
             Revision.revision_date,
             func.count(Revision.id).label('total'),
-            func.sum(Revision.completed).label('completed')
+            func.sum(cast(Revision.completed, Integer)).label('completed')
         )
         .join(Revision.topic)
         .filter(Topic.user_id == user_id)
