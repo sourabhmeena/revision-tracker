@@ -1,0 +1,76 @@
+frontend/components/ConfirmModal.tsx
+  2a76a59fc03bf81e 27
+frontend/components/CompletionCelebration.tsx
+  2a76a59fc03bf81e 120
+frontend/public/manifest.json
+  2a76a59fc03bf81e 9,19-23,29-34
+frontend/components/StreakDisplay.tsx
+  2a76a59fc03bf81e 21,42,66
+frontend/components/TopicScheduleEditor.tsx
+  2a76a59fc03bf81e 230
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 9,11-18,23,118,121,125-128,130-164,321
+  8a9660e88f0332d6 129
+frontend/components/ProgressBar.tsx
+  2a76a59fc03bf81e 19
+backend/main.py
+  2a76a59fc03bf81e 222-241
+frontend/components/CalendarGrid.tsx
+  2a76a59fc03bf81e 101,155,158-159,163
+frontend/components/LoginForm.tsx
+  2a76a59fc03bf81e 68,78,124
+frontend/components/InputModal.tsx
+  2a76a59fc03bf81e 67
+frontend/components/MonthYearPicker.tsx
+  2a76a59fc03bf81e 49,81,107
+frontend/components/TopicForm.tsx
+  2a76a59fc03bf81e 88
+frontend/app/layout.tsx
+  2a76a59fc03bf81e 25
+frontend/components/DayRing.tsx
+  2a76a59fc03bf81e 21
+frontend/app/topics/[id]/page.tsx
+  2a76a59fc03bf81e 162,192,248,274
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 198,322,436,497
+frontend/components/TodayWidget.tsx
+  2a76a59fc03bf81e 48
+frontend/components/Navigation.tsx
+  8a9660e88f0332d6 3,68,118
+  2a76a59fc03bf81e 84,123-131,133-135,137,152
+frontend/components/UpcomingList.tsx
+  2a76a59fc03bf81e 96,160,196,220,250,266
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "9b1c9baef9ebedafb27748c440b97868a9666c2b",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 144,
+      "total_deletions": 98,
+      "accepted_lines": 142,
+      "overriden_lines": 0
+    },
+    "8a9660e88f0332d6": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "7665861c-cceb-483b-858e-10f7e5b045d2",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 4,
+      "total_deletions": 3,
+      "accepted_lines": 4,
+      "overriden_lines": 0
+    }
+  }
+}
