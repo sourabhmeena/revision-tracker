@@ -1,6 +1,5 @@
 import json
 import os
-from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
