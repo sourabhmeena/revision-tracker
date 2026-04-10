@@ -85,7 +85,7 @@ export default function TopicForm() {
           </datalist>
           <button
             onClick={addTopic}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-2 md:py-3 rounded-lg font-medium transition-all shrink-0"
+            className="bg-sky-500 hover:bg-sky-600 text-white px-4 md:px-5 py-2 md:py-3 rounded-lg font-medium transition-all shrink-0"
           >
             Add
           </button>

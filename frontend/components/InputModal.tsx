@@ -64,7 +64,7 @@ export default function InputModal({
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+            className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors text-sm"
           >
             {submitLabel}
           </button>

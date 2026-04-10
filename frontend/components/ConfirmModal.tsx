@@ -24,7 +24,7 @@ export default function ConfirmModal({
   const btnClass =
     variant === "danger"
       ? "bg-red-600 hover:bg-red-700 text-white"
-      : "bg-blue-600 hover:bg-blue-700 text-white";
+      : "bg-sky-500 hover:bg-sky-600 text-white";
 
   return (
     <div

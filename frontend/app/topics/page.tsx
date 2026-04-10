@@ -195,7 +195,7 @@ export default function TopicsPage() {
 
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="px-5 py-2.5 md:px-6 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 self-start md:self-auto"
+              className="px-5 py-2.5 md:px-6 md:py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors flex items-center gap-2 self-start md:self-auto"
             >
               <span className="text-xl">+</span>
               <span>Add New Topic</span>
@@ -319,7 +319,7 @@ export default function TopicsPage() {
               </p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors"
               >
                 Add Your First Topic
               </button>
@@ -433,7 +433,7 @@ export default function TopicsPage() {
 
                         <div className="mt-2 md:mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                           <div
-                            className="bg-blue-600 h-2 rounded-full transition-all"
+                            className="bg-gradient-to-r from-sky-500 to-cyan-400 h-2 rounded-full transition-all"
                             style={{ width: `${topic.progress_percent}%` }}
                           />
                         </div>

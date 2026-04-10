@@ -159,7 +159,7 @@ export default function TopicDetailPage() {
             <div className="flex items-center gap-4 mb-2">
               <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                 <div
-                  className="bg-blue-600 h-3 rounded-full transition-all"
+                  className="bg-gradient-to-r from-sky-500 to-cyan-400 h-3 rounded-full transition-all"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -189,7 +189,7 @@ export default function TopicDetailPage() {
               <div className="flex gap-2">
                 <button
                   onClick={saveDetails}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors text-sm"
+                  className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors text-sm"
                 >
                   Save
                 </button>

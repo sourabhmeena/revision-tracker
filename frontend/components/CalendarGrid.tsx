@@ -12,7 +12,6 @@ import {
   format,
   addMonths,
   subMonths,
-  isToday,
 } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import DateModal from "./DateModal";
@@ -67,6 +66,7 @@ export default function CalendarGrid() {
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
   const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
   const days = eachDayOfInterval({ start: gridStart, end: gridEnd });
+  const todayIso = format(new Date(), "yyyy-MM-dd");
 
   const statsByDate = useMemo(() => {
     const map: Record<string, { done: number; total: number }> = {};
@@ -98,7 +98,7 @@ export default function CalendarGrid() {
 
           <button
             onClick={goToToday}
-            className="px-3 md:px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-xs md:text-sm"
+            className="px-3 md:px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium transition-colors text-xs md:text-sm"
             title="Go to today"
           >
             Today
@@ -134,10 +134,9 @@ export default function CalendarGrid() {
         >
           {days.map((day) => {
             const iso = format(day, "yyyy-MM-dd");
-            const todayIso = format(new Date(), "yyyy-MM-dd");
             const inMonth = day.getMonth() === currentMonth.getMonth();
             const stats = statsByDate[iso];
-            const isCurrentDay = isToday(day);
+            const isCurrentDay = iso === todayIso;
             const isOverdue = stats && stats.total > 0 && stats.done < stats.total && iso < todayIso;
 
             return (

@@ -1,12 +1,12 @@
 {
-  "name": "Revision Planner - Spaced Repetition Learning",
-  "short_name": "RevisionPlan",
-  "description": "Track and manage your revision schedule with scientifically-proven spaced repetition",
+  "name": "Recall Smart - Spaced Repetition Learning",
+  "short_name": "Recall Smart",
+  "description": "Master your learning with scientifically-proven spaced repetition",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f9fafb",
-  "theme_color": "#2563eb",
+  "theme_color": "#0ea5e9",
   "orientation": "portrait",
   "icons": [
     {
@@ -23,34 +23,6 @@
     }
   ],
   "categories": ["education", "productivity"],
-  "screenshots": [
-    {
-      "src": "/screenshot-narrow.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
-  "shortcuts": [
-    {
-      "src": "/screenshot-narrow.svg",
-      "sizes": "540x720",
-      "type": "image/svg+xml",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/screenshot-wide.svg",
-      "sizes": "1280x720",
-      "type": "image/svg+xml",
-      "form_factor": "wide"
-    }
-  ],
   "shortcuts": [
     {
       "name": "Today's Revisions",

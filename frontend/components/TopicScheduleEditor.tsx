@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
 
@@ -27,11 +27,6 @@ export default function TopicScheduleEditor({
   const [repeatInterval, setRepeatInterval] = useState(currentRepeat);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    setIntervals(currentIntervals);
-    setRepeatInterval(currentRepeat);
-  }, [currentIntervals, currentRepeat]);
 
   const updateInterval = (index: number, value: number) => {
     setIntervals((prev) => prev.map((v, i) => (i === index ? Math.max(1, value) : v)));
@@ -232,7 +227,7 @@ export default function TopicScheduleEditor({
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-4 md:px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
+            className="px-4 md:px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
           >
             {saving ? "Saving..." : "Save & Reschedule"}
           </button>

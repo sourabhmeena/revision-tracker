@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { optimisticToggleRevision } from "../hooks/useAPI";
 import type { RevisionTopic } from "../app/types";
 
@@ -10,40 +10,30 @@ interface TopicChecklistProps {
 }
 
 export default function TopicChecklist({ topics, isoDate }: TopicChecklistProps) {
-  const [localTopics, setLocalTopics] = useState<RevisionTopic[]>([]);
+  const filtered = useMemo(
+    () => topics.filter((t) => t.title && t.title.trim() !== ""),
+    [topics],
+  );
 
-  useEffect(() => {
-    setLocalTopics(topics.filter((t) => t.title && t.title.trim() !== ""));
-  }, [topics]);
-
-  const toggle = async (item: RevisionTopic, index: number) => {
-    const updated = !item.completed;
-
-    setLocalTopics((prev) =>
-      prev.map((t, i) => (i === index ? { ...t, completed: updated } : t))
-    );
-
+  const toggle = async (item: RevisionTopic) => {
     try {
       await optimisticToggleRevision({
         revisionId: item.revision_id,
-        newCompleted: updated,
+        newCompleted: !item.completed,
         topicId: item.topic_id,
         isoDate,
       });
     } catch (err) {
-      setLocalTopics((prev) =>
-        prev.map((t, i) => (i === index ? { ...t, completed: !updated } : t))
-      );
       console.error("Toggle error", err);
     }
   };
 
   return (
     <div className="space-y-3 mt-4">
-      {localTopics.map((item, i) => (
+      {filtered.map((item) => (
         <div
           key={item.revision_id}
-          onClick={() => toggle(item, i)}
+          onClick={() => toggle(item)}
           className="flex items-center gap-3 cursor-pointer select-none group"
         >
           <div

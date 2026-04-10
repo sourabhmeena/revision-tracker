@@ -117,7 +117,7 @@ export default function CompletionCelebration({
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5 }}
                 onClick={onClose}
-                className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                className="mt-6 px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors"
               >
                 Continue Learning! ✨
               </motion.button>

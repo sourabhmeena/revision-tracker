@@ -5,28 +5,63 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import useDarkMode from "../hooks/useDarkMode";
 
+const navItems = [
+  {
+    href: "/",
+    label: "Home",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+      </svg>
+    ),
+  },
+  {
+    href: "/topics",
+    label: "Topics",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+      </svg>
+    ),
+  },
+  {
+    href: "/list",
+    label: "List",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+      </svg>
+    ),
+  },
+  {
+    href: "/calendar",
+    label: "Calendar",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+      </svg>
+    ),
+  },
+  {
+    href: "/settings",
+    label: "Settings",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-6 h-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+    ),
+  },
+];
+
 export default function Navigation() {
   const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
   const { dark, toggle: toggleDark } = useDarkMode();
-
-  const navItems = [
-    { href: "/", label: "Dashboard", icon: "🏠" },
-    { href: "/topics", label: "Topics", icon: "📚" },
-    { href: "/list", label: "List View", icon: "📋" },
-    { href: "/calendar", label: "Calendar", icon: "📅" },
-    { href: "/settings", label: "Settings", icon: "⚙️" },
-  ];
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -34,107 +69,135 @@ export default function Navigation() {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 relative z-40">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="flex items-center justify-between h-14 md:h-16">
-          <h1 className="text-lg md:text-2xl font-bold text-blue-600 dark:text-blue-400">
-            📚 Revision Planner
-          </h1>
+    <>
+      {/* ── Desktop top bar ── */}
+      <nav className="hidden md:block bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 relative z-40">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex items-center justify-between h-14">
+            <Link href="/" className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                </svg>
+              </div>
+              <span className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+                Recall Smart
+              </span>
+            </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all
-                    ${isActive ? "bg-blue-600 text-white shadow-md" : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"}
-                  `}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
+            <div className="flex items-center gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`
+                      flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all
+                      ${isActive
+                        ? "bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400"
+                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}
+                    `}
+                  >
+                    <span className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5">{item.icon}</span>
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1" />
+              <button
+                onClick={toggleDark}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
+                title="Toggle dark mode"
+              >
+                {dark ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                  </svg>
+                )}
+              </button>
+              {isLoggedIn ? (
+                <button onClick={logout} className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                  Logout
+                </button>
+              ) : (
+                <Link href="/login" className="px-4 py-1.5 text-sm font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
+                  Login
                 </Link>
-              );
-            })}
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* ── Mobile top bar ── */}
+      <nav className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 relative z-40">
+        <div className="flex items-center justify-between h-12 px-4">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-100">
+              Recall Smart
+            </span>
+          </Link>
+          <div className="flex items-center gap-1">
             <button
               onClick={toggleDark}
-              className="px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-lg"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
               title="Toggle dark mode"
             >
-              {dark ? "☀️" : "🌙"}
+              {dark ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+                </svg>
+              )}
             </button>
             {isLoggedIn ? (
-              <button onClick={logout} className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition-colors">
+              <button onClick={logout} className="px-2.5 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                 Logout
               </button>
             ) : (
-              <Link href="/login" className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
+              <Link href="/login" className="px-3 py-1 text-xs font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
                 Login
               </Link>
             )}
           </div>
+        </div>
+      </nav>
 
-          {/* Mobile hamburger */}
-          <div className="md:hidden flex items-center gap-1">
-            <button
-              onClick={toggleDark}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-lg"
-              title="Toggle dark mode"
-            >
-              {dark ? "☀️" : "🌙"}
-            </button>
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle menu"
-            >
-              <div className="w-6 h-5 flex flex-col justify-between">
-                <span className={`block h-0.5 w-6 bg-gray-700 dark:bg-gray-200 transition-all ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-                <span className={`block h-0.5 w-6 bg-gray-700 dark:bg-gray-200 transition-all ${menuOpen ? "opacity-0" : ""}`} />
-                <span className={`block h-0.5 w-6 bg-gray-700 dark:bg-gray-200 transition-all ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-              </div>
-            </button>
-          </div>
+      {/* ── Mobile bottom bar ── */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-bottom">
+        <div className="flex items-center justify-around h-14">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                  isActive
+                    ? "text-sky-500 dark:text-sky-400"
+                    : "text-gray-400 dark:text-gray-500"
+                }`}
+              >
+                <span className="[&>svg]:w-6 [&>svg]:h-6">{item.icon}</span>
+                <span className="text-[10px] mt-0.5 font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
-
-      {/* Mobile menu dropdown */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg">
-          <div className="px-4 py-3 space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 rounded-lg font-medium transition-all
-                    ${isActive ? "bg-blue-600 text-white shadow-md" : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"}
-                  `}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-            {isLoggedIn ? (
-              <button onClick={logout} className="w-full text-left flex items-center gap-3 px-4 py-3 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-medium hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors">
-                <span>🚪</span>
-                <span>Logout</span>
-              </button>
-            ) : (
-              <Link href="/login" className="flex items-center gap-3 px-4 py-3 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
-                <span>🔑</span>
-                <span>Login</span>
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
-    </nav>
+    </>
   );
 }
