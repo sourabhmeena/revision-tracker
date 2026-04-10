@@ -1,37 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import Navigation from "../../components/Navigation";
 import TopicScheduleEditor from "../../components/TopicScheduleEditor";
 import { API } from "../api";
 import useAuth from "../useAuth";
+import { useTopics, invalidateTopics } from "../../hooks/useAPI";
 import type { TopicSummary } from "../types";
 
 export default function TopicsPage() {
   const isLoggedIn = useAuth();
-  const [topics, setTopics] = useState<TopicSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: topics = [], isLoading: loading } = useTopics();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [newTopicTitle, setNewTopicTitle] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [scheduleTopic, setScheduleTopic] = useState<TopicSummary | null>(null);
-
-  const loadTopics = useCallback(async () => {
-    if (!isLoggedIn) return;
-    setLoading(true);
-    try {
-      const res = await API.get<TopicSummary[]>("/topics");
-      setTopics(res.data);
-    } catch (error) {
-      console.error("Failed to load topics:", error);
-    }
-    setLoading(false);
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    loadTopics();
-  }, [loadTopics]);
 
   const handleAddTopic = async () => {
     if (!newTopicTitle.trim()) return;
@@ -40,7 +24,7 @@ export default function TopicsPage() {
       await API.post("/topics", { title: newTopicTitle });
       setNewTopicTitle("");
       setShowAddForm(false);
-      loadTopics();
+      invalidateTopics();
     } catch (error) {
       console.error("Failed to add topic:", error);
       alert("Failed to add topic");
@@ -54,7 +38,7 @@ export default function TopicsPage() {
       await API.patch(`/topics/${id}`, { title: editTitle });
       setEditingId(null);
       setEditTitle("");
-      loadTopics();
+      invalidateTopics();
     } catch (error) {
       console.error("Failed to update topic:", error);
       alert("Failed to update topic");
@@ -68,7 +52,7 @@ export default function TopicsPage() {
 
     try {
       await API.delete(`/topics/${id}`);
-      loadTopics();
+      invalidateTopics();
     } catch (error) {
       console.error("Failed to delete topic:", error);
       alert("Failed to delete topic");
@@ -88,7 +72,7 @@ export default function TopicsPage() {
     try {
       const res = await API.post(`/topics/${id}/extend-revisions?years=${years}`);
       alert(`Successfully added ${res.data.revisions_added} revisions for ${years} year(s)!`);
-      loadTopics();
+      invalidateTopics();
     } catch (error) {
       console.error("Failed to extend revisions:", error);
       alert("Failed to extend revisions");
@@ -344,7 +328,7 @@ export default function TopicsPage() {
           hasCustom={scheduleTopic.has_custom_schedule}
           onSaved={() => {
             setScheduleTopic(null);
-            loadTopics();
+            invalidateTopics();
           }}
           onClose={() => setScheduleTopic(null)}
         />

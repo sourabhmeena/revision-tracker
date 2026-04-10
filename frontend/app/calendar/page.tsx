@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import Navigation from "../../components/Navigation";
 import CalendarGrid from "../../components/CalendarGrid";
 import useAuth from "../useAuth";
 
 export default function CalendarView() {
   const isLoggedIn = useAuth();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const triggerRefresh = () => setRefreshKey((n) => n + 1);
 
   if (!isLoggedIn) {
     return (
@@ -33,7 +30,7 @@ export default function CalendarView() {
           </div>
 
           <div className="bg-white shadow-lg rounded-xl p-2 md:p-6 border border-gray-200">
-            <CalendarGrid refreshKey={refreshKey} onRefresh={triggerRefresh} />
+            <CalendarGrid />
           </div>
 
           <div className="mt-6 p-6 bg-blue-50 rounded-xl border border-blue-200">

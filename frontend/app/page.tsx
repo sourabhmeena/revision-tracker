@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import Navigation from "../components/Navigation";
 import TopicForm from "../components/TopicForm";
@@ -8,8 +7,6 @@ import useAuth from "./useAuth";
 
 export default function Home() {
   const isLoggedIn = useAuth();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const triggerRefresh = () => setRefreshKey((n) => n + 1);
 
   if (!isLoggedIn) {
     return (
@@ -35,7 +32,7 @@ export default function Home() {
           </div>
 
           {/* Add Topic Section */}
-          <TopicForm onAdded={triggerRefresh} />
+          <TopicForm />
 
           {/* Quick Links */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

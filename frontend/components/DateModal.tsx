@@ -8,10 +8,9 @@ import type { ModalData } from "../app/types";
 interface DateModalProps {
   data: ModalData | null;
   onClose: () => void;
-  refresh: () => void;
 }
 
-export default function DateModal({ data, onClose, refresh }: DateModalProps) {
+export default function DateModal({ data, onClose }: DateModalProps) {
   if (!data) return null;
 
   return (
@@ -38,7 +37,7 @@ export default function DateModal({ data, onClose, refresh }: DateModalProps) {
         )}
 
         {data.topics && data.topics.length > 0 ? (
-          <TopicChecklist topics={data.topics} refresh={refresh} />
+          <TopicChecklist topics={data.topics} />
         ) : (
           <div className="text-gray-500 text-center mt-6">
             No revisions scheduled for this date.

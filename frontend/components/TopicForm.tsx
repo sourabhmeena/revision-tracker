@@ -2,12 +2,9 @@
 
 import { useState } from "react";
 import { API } from "../app/api";
+import { invalidateTopics } from "../hooks/useAPI";
 
-interface TopicFormProps {
-  onAdded?: () => void;
-}
-
-export default function TopicForm({ onAdded }: TopicFormProps) {
+export default function TopicForm() {
   const [title, setTitle] = useState("");
 
   const addTopic = async () => {
@@ -15,7 +12,7 @@ export default function TopicForm({ onAdded }: TopicFormProps) {
 
     await API.post("/topics", { title });
     setTitle("");
-    if (onAdded) onAdded();
+    invalidateTopics();
   };
 
   return (

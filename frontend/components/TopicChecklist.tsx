@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { API } from "../app/api";
+import { invalidateTopics } from "../hooks/useAPI";
 import type { RevisionTopic } from "../app/types";
 
 interface TopicChecklistProps {
   topics: RevisionTopic[];
-  refresh: () => void;
 }
 
-export default function TopicChecklist({ topics, refresh }: TopicChecklistProps) {
+export default function TopicChecklist({ topics }: TopicChecklistProps) {
   const [localTopics, setLocalTopics] = useState<RevisionTopic[]>([]);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function TopicChecklist({ topics, refresh }: TopicChecklistProps)
 
     try {
       await API.patch(`/revision/${item.revision_id}`, { completed: updated });
-      refresh();
+      invalidateTopics();
     } catch (err) {
       // Rollback on failure
       setLocalTopics((prev) =>

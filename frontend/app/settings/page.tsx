@@ -1,48 +1,27 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navigation from "../../components/Navigation";
 import { API } from "../api";
 import useAuth from "../useAuth";
-
-interface SettingsData {
-  intervals: number[];
-  repeat_interval: number;
-  is_custom: boolean;
-  defaults: {
-    intervals: number[];
-    repeat_interval: number;
-  };
-}
+import { useSettings, invalidateSettings } from "../../hooks/useAPI";
 
 export default function SettingsPage() {
   const isLoggedIn = useAuth();
-  const [settings, setSettings] = useState<SettingsData | null>(null);
+  const { data: settings, isLoading: loading } = useSettings();
   const [intervals, setIntervals] = useState<number[]>([]);
   const [repeatInterval, setRepeatInterval] = useState<number>(30);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
-  const load = useCallback(async () => {
-    if (!isLoggedIn) return;
-    setLoading(true);
-    try {
-      const res = await API.get<SettingsData>("/settings");
-      setSettings(res.data);
-      setIntervals(res.data.intervals);
-      setRepeatInterval(res.data.repeat_interval);
-    } catch (err) {
-      console.error("Failed to load settings", err);
-    }
-    setLoading(false);
-  }, [isLoggedIn]);
-
   useEffect(() => {
-    load();
-  }, [load]);
+    if (settings) {
+      setIntervals(settings.intervals);
+      setRepeatInterval(settings.repeat_interval);
+    }
+  }, [settings]);
 
   const handleSave = async () => {
     if (intervals.length === 0) {
@@ -61,15 +40,11 @@ export default function SettingsPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await API.patch("/settings", {
+      await API.patch("/settings", {
         intervals,
         repeat_interval: repeatInterval,
       });
-      setSettings((prev) =>
-        prev
-          ? { ...prev, intervals: res.data.intervals, repeat_interval: res.data.repeat_interval, is_custom: res.data.is_custom }
-          : prev
-      );
+      invalidateSettings();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch (err: unknown) {
@@ -84,12 +59,8 @@ export default function SettingsPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await API.post("/settings/reset");
-      setIntervals(res.data.intervals);
-      setRepeatInterval(res.data.repeat_interval);
-      setSettings((prev) =>
-        prev ? { ...prev, intervals: res.data.intervals, repeat_interval: res.data.repeat_interval, is_custom: false } : prev
-      );
+      await API.post("/settings/reset");
+      invalidateSettings();
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     } catch {

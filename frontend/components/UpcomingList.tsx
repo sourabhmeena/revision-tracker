@@ -1,34 +1,21 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
 import type { RevisionListItem, ModalData } from "../app/types";
 import DateModal from "./DateModal";
 import CompletionCelebration from "./CompletionCelebration";
+import { useRevisions } from "../hooks/useAPI";
 
 const ITEMS_PER_PAGE = 10;
 
-interface UpcomingListProps {
-  refresh: number;
-  onRefresh: () => void;
-}
-
-export default function UpcomingList({ refresh, onRefresh }: UpcomingListProps) {
-  const [list, setList] = useState<RevisionListItem[]>([]);
+export default function UpcomingList() {
+  const { data: list = [] } = useRevisions();
   const [modalData, setModalData] = useState<ModalData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showCelebration, setShowCelebration] = useState(false);
   const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
-
-  const load = useCallback(async () => {
-    const res = await API.get<RevisionListItem[]>("/revisions");
-    setList(res.data);
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [refresh, load]);
 
   const openModal = async (item: RevisionListItem) => {
     const res = await API.get<ModalData>(`/revision-date/${item.iso_date}`);
@@ -229,7 +216,6 @@ export default function UpcomingList({ refresh, onRefresh }: UpcomingListProps) 
       <DateModal
         data={modalData}
         onClose={handleModalClose}
-        refresh={onRefresh}
       />
 
       <CompletionCelebration

@@ -1,36 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import Navigation from "../../components/Navigation";
 import UpcomingList from "../../components/UpcomingList";
 import StreakDisplay from "../../components/StreakDisplay";
-import { API } from "../api";
 import useAuth from "../useAuth";
-import type { StreakData } from "../types";
+import { useStreaks } from "../../hooks/useAPI";
 
 export default function ListView() {
   const isLoggedIn = useAuth();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [streakData, setStreakData] = useState<StreakData | null>(null);
-  const [loadingStreak, setLoadingStreak] = useState(true);
-
-  const triggerRefresh = () => setRefreshKey((n) => n + 1);
-
-  const loadStreaks = useCallback(async () => {
-    if (!isLoggedIn) return;
-    setLoadingStreak(true);
-    try {
-      const res = await API.get<StreakData>("/streaks");
-      setStreakData(res.data);
-    } catch (error) {
-      console.error("Failed to load streaks:", error);
-    }
-    setLoadingStreak(false);
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    loadStreaks();
-  }, [refreshKey, loadStreaks]);
+  const { data: streakData, isLoading: loadingStreak } = useStreaks();
 
   if (!isLoggedIn) {
     return (
@@ -66,7 +44,7 @@ export default function ListView() {
             </div>
           )}
 
-          <UpcomingList refresh={refreshKey} onRefresh={triggerRefresh} />
+          <UpcomingList />
         </div>
       </div>
     </>

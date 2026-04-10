@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { API } from "../app/api";
-import type { RevisionListItem, ModalData } from "../app/types";
+import type { ModalData } from "../app/types";
 import {
   startOfMonth,
   endOfMonth,
@@ -18,26 +18,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import DateModal from "./DateModal";
 import MonthYearPicker from "./MonthYearPicker";
 import DayRing from "./DayRing";
+import { useRevisions } from "../hooks/useAPI";
 
-interface CalendarGridProps {
-  refreshKey: number;
-  onRefresh: () => void;
-}
-
-export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProps) {
-  const [items, setItems] = useState<RevisionListItem[]>([]);
+export default function CalendarGrid() {
+  const { data: items = [] } = useRevisions();
   const [modalData, setModalData] = useState<ModalData | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [direction, setDirection] = useState(0);
-
-  const load = useCallback(async () => {
-    const res = await API.get<RevisionListItem[]>("/revisions");
-    setItems(res.data);
-  }, []);
-
-  useEffect(() => {
-    load();
-  }, [refreshKey, load]);
 
   const goToPreviousMonth = useCallback(() => {
     setDirection(-1);
@@ -193,7 +180,6 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
       <DateModal
         data={modalData}
         onClose={() => setModalData(null)}
-        refresh={onRefresh}
       />
     </div>
   );
