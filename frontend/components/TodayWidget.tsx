@@ -1,14 +1,17 @@
 "use client";
 
-import { API } from "../app/api";
-import { useTodayRevisions, invalidateTopics } from "../hooks/useAPI";
+import { useTodayRevisions, optimisticToggleRevision, localIso } from "../hooks/useAPI";
 
 export default function TodayWidget() {
   const { data, isLoading } = useTodayRevisions();
 
-  const toggle = async (revisionId: string, completed: boolean) => {
-    await API.patch(`/revision/${revisionId}`, { completed: !completed });
-    invalidateTopics();
+  const toggle = async (revisionId: string, topicId: string, completed: boolean) => {
+    await optimisticToggleRevision({
+      revisionId,
+      newCompleted: !completed,
+      topicId,
+      isoDate: localIso(),
+    });
   };
 
   if (isLoading) {
@@ -56,7 +59,7 @@ export default function TodayWidget() {
         {topics.map((t) => (
           <li key={t.revision_id} className="flex gap-3">
             <button
-              onClick={() => toggle(t.revision_id, t.completed)}
+              onClick={() => toggle(t.revision_id, t.topic_id, t.completed)}
               className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
                 t.completed
                   ? "bg-green-500 border-green-500 text-white"

@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { API } from "../app/api";
-import { invalidateTopics } from "../hooks/useAPI";
+import { optimisticToggleRevision } from "../hooks/useAPI";
 import type { RevisionTopic } from "../app/types";
 
 interface TopicChecklistProps {
   topics: RevisionTopic[];
+  isoDate: string;
 }
 
-export default function TopicChecklist({ topics }: TopicChecklistProps) {
+export default function TopicChecklist({ topics, isoDate }: TopicChecklistProps) {
   const [localTopics, setLocalTopics] = useState<RevisionTopic[]>([]);
 
   useEffect(() => {
@@ -24,10 +24,13 @@ export default function TopicChecklist({ topics }: TopicChecklistProps) {
     );
 
     try {
-      await API.patch(`/revision/${item.revision_id}`, { completed: updated });
-      invalidateTopics();
+      await optimisticToggleRevision({
+        revisionId: item.revision_id,
+        newCompleted: updated,
+        topicId: item.topic_id,
+        isoDate,
+      });
     } catch (err) {
-      // Rollback on failure
       setLocalTopics((prev) =>
         prev.map((t, i) => (i === index ? { ...t, completed: !updated } : t))
       );

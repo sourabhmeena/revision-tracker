@@ -6,7 +6,7 @@ import useSWR from "swr";
 import { API } from "../../api";
 import Navigation from "../../../components/Navigation";
 import useAuth from "../../useAuth";
-import { invalidateTopics, localIso } from "../../../hooks/useAPI";
+import { optimisticToggleRevision, refreshAll, localIso } from "../../../hooks/useAPI";
 
 interface TopicRevision {
   id: string;
@@ -50,19 +50,39 @@ export default function TopicDetailPage() {
   };
 
   const saveDetails = async () => {
+    const ch = editChapter.trim() || null;
+    const desc = editDescription.trim() || null;
     await API.patch(`/topics/${id}`, {
-      chapter: editChapter.trim() || "",
-      description: editDescription.trim() || "",
+      chapter: ch ?? "",
+      description: desc ?? "",
     });
-    mutate();
-    invalidateTopics();
+    mutate(
+      (cur) => cur && { ...cur, chapter: ch, description: desc },
+      false,
+    );
+    await refreshAll();
     setEditingDetails(false);
   };
 
-  const toggleRevision = async (revisionId: string, completed: boolean) => {
-    await API.patch(`/revision/${revisionId}`, { completed: !completed });
-    mutate();
-    invalidateTopics();
+  const toggleRevision = async (revisionId: string, completed: boolean, revDate: string) => {
+    const newCompleted = !completed;
+    mutate(
+      (cur) =>
+        cur && {
+          ...cur,
+          completed_revisions: cur.completed_revisions + (newCompleted ? 1 : -1),
+          revisions: cur.revisions.map((r) =>
+            r.id === revisionId ? { ...r, completed: newCompleted } : r
+          ),
+        },
+      false,
+    );
+    await optimisticToggleRevision({
+      revisionId,
+      newCompleted,
+      topicId: id,
+      isoDate: revDate,
+    });
   };
 
   if (!isLoggedIn) {
@@ -230,7 +250,7 @@ export default function TopicDetailPage() {
                   }`}
                 >
                   <button
-                    onClick={() => toggleRevision(r.id, r.completed)}
+                    onClick={() => toggleRevision(r.id, r.completed, r.date)}
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
                       r.completed
                         ? "bg-green-500 border-green-500 text-white"

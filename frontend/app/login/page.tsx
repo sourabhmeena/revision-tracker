@@ -1,23 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import LoginForm from "../../components/LoginForm";
 
 export default function LoginPage() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isLoggedIn) {
+    if (localStorage.getItem("token")) {
       window.location.href = "/";
     }
-  }, [isLoggedIn]);
+  }, []);
 
   const handleLogin = () => {
     window.location.href = "/";

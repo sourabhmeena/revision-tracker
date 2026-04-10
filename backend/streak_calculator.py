@@ -2,7 +2,7 @@
 Streak calculation utility for tracking consecutive days of completed revisions.
 """
 
-from datetime import date, timedelta
+from datetime import date
 from sqlalchemy.orm import Session
 from sqlalchemy import func, cast, Integer
 

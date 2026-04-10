@@ -3,7 +3,7 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
-import { invalidateTopics, useTopics } from "../hooks/useAPI";
+import { refreshAll, useTopics } from "../hooks/useAPI";
 
 export default function TopicForm() {
   const { data: topics = [] } = useTopics();
@@ -33,7 +33,7 @@ export default function TopicForm() {
       setChapter("");
       setDescription("");
       setShowDetails(false);
-      invalidateTopics();
+      await refreshAll();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;

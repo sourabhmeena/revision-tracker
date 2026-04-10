@@ -9,7 +9,7 @@ import sys
 
 # Import from scheduler module
 try:
-    from scheduler import generate_revisions, REVISION_INTERVALS, REPEAT_INTERVAL
+    from scheduler import generate_revisions, DEFAULT_INTERVALS as REVISION_INTERVALS, DEFAULT_REPEAT as REPEAT_INTERVAL
 except ImportError:
     print("Error: Could not import scheduler module")
     sys.exit(1)

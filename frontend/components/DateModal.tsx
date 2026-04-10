@@ -37,7 +37,7 @@ export default function DateModal({ data, onClose }: DateModalProps) {
         )}
 
         {data.topics && data.topics.length > 0 ? (
-          <TopicChecklist topics={data.topics} />
+          <TopicChecklist topics={data.topics} isoDate={data.iso_date} />
         ) : (
           <div className="text-gray-500 dark:text-gray-400 text-center mt-6">
             No revisions scheduled for this date.

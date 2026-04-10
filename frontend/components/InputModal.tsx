@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 interface InputModalProps {
   title: string;
   message: string;
-  inputLabel?: string;
   inputType?: "text" | "number";
   defaultValue?: string;
   placeholder?: string;

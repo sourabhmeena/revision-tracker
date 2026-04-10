@@ -8,7 +8,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import InputModal from "../../components/InputModal";
 import { API } from "../api";
 import useAuth from "../useAuth";
-import { useTopics, invalidateTopics } from "../../hooks/useAPI";
+import { useTopics, refreshAll } from "../../hooks/useAPI";
 import type { TopicSummary } from "../types";
 
 type SortKey = "newest" | "alphabetical" | "most_progress" | "least_progress";
@@ -98,7 +98,7 @@ export default function TopicsPage() {
       setNewTopicCategory("");
       setNewTopicChapter("");
       setShowAddForm(false);
-      invalidateTopics();
+      await refreshAll();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
       showToast("error", msg || "Failed to add topic");
@@ -120,7 +120,7 @@ export default function TopicsPage() {
       setEditCategory("");
       setEditChapter("");
       setEditDescription("");
-      invalidateTopics();
+      await refreshAll();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
       showToast("error", msg || "Failed to update topic");
@@ -131,7 +131,7 @@ export default function TopicsPage() {
     if (!deleteTarget) return;
     try {
       await API.delete(`/topics/${deleteTarget.id}`);
-      invalidateTopics();
+      await refreshAll();
       showToast("success", `"${deleteTarget.title}" deleted`);
     } catch {
       showToast("error", "Failed to delete topic");
@@ -147,7 +147,7 @@ export default function TopicsPage() {
     try {
       const res = await API.post(`/topics/${extendTarget.id}/extend-revisions?years=${n}`);
       showToast("success", `Added ${res.data.revisions_added} revisions for ${years} year(s)`);
-      invalidateTopics();
+      await refreshAll();
     } catch {
       showToast("error", "Failed to extend revisions");
     }
@@ -526,9 +526,9 @@ export default function TopicsPage() {
           currentIntervals={scheduleTopic.intervals}
           currentRepeat={scheduleTopic.repeat_interval}
           hasCustom={scheduleTopic.has_custom_schedule}
-          onSaved={() => {
+          onSaved={async () => {
             setScheduleTopic(null);
-            invalidateTopics();
+            await refreshAll();
           }}
           onClose={() => setScheduleTopic(null)}
         />

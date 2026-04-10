@@ -1,7 +1,6 @@
 import json
 import os
 from datetime import date, datetime, timedelta, timezone
-from typing import Optional
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -137,7 +136,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
@@ -158,14 +157,6 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except JWTError:
         raise credentials_exception
     return user_id
-
-
-def _user_schedule_params(user: User) -> dict:
-    """Extract intervals/repeat kwargs for the scheduler from a User row."""
-    return {
-        "intervals": user.get_intervals(),
-        "repeat": user.get_repeat(),
-    }
 
 
 def _topic_schedule_params(topic: Topic, user: User) -> dict:
@@ -404,7 +395,12 @@ def create_topic(topic: TopicCreate, db: Session = Depends(get_db), user_id: str
 
 @app.get("/topics/{topic_id}")
 def get_topic(topic_id: str, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
-    topic = db.query(Topic).filter(Topic.id == topic_id, Topic.user_id == user_id).first()
+    topic = (
+        db.query(Topic)
+        .options(subqueryload(Topic.revisions))
+        .filter(Topic.id == topic_id, Topic.user_id == user_id)
+        .first()
+    )
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")
 
@@ -480,13 +476,16 @@ def extend_topic_revisions(topic_id: str, years: int = 1, db: Session = Depends(
     user = db.query(User).filter(User.id == user_id).first()
     params = _topic_schedule_params(topic, user) if user else {}
 
-    existing_count = len(topic.revisions)
+    existing_count = db.query(func.count(Revision.id)).filter(Revision.topic_id == topic_id).scalar() or 0
     new_dates = extend_revisions(topic.created_at, existing_count, years, **params)
+
+    existing_dates = {
+        r[0] for r in db.query(Revision.revision_date).filter(Revision.topic_id == topic_id).all()
+    }
 
     added_count = 0
     for d in new_dates:
-        exists = db.query(Revision).filter(Revision.topic_id == topic_id, Revision.revision_date == d).first()
-        if not exists:
+        if d not in existing_dates:
             db.add(Revision(topic_id=topic_id, revision_date=d))
             added_count += 1
 
@@ -575,19 +574,17 @@ def update_topic_schedule(
         topic.revision_intervals = json.dumps(payload.intervals)
         topic.repeat_interval = payload.repeat_interval
 
-    # Collect dates that have completed revisions (we keep these)
-    completed_dates = set()
-    for r in topic.revisions:
-        if r.completed:
-            completed_dates.add(r.revision_date)
+    completed_dates = {
+        r[0] for r in db.query(Revision.revision_date)
+        .filter(Revision.topic_id == topic_id, Revision.completed == True)  # noqa: E712
+        .all()
+    }
 
-    # Delete all uncompleted revisions
     db.query(Revision).filter(
         Revision.topic_id == topic_id,
         Revision.completed == False,  # noqa: E712
     ).delete(synchronize_session="fetch")
 
-    # Generate the full new schedule
     new_dates = generate_revisions(
         topic.created_at,
         years=5,
@@ -595,23 +592,29 @@ def update_topic_schedule(
         repeat=payload.repeat_interval,
     )
 
+    remaining_dates = {
+        r[0] for r in db.query(Revision.revision_date).filter(Revision.topic_id == topic_id).all()
+    }
+
     added = 0
     for d in new_dates:
-        if d in completed_dates:
+        if d in completed_dates or d in remaining_dates:
             continue
-        exists = (
-            db.query(Revision)
-            .filter(Revision.topic_id == topic_id, Revision.revision_date == d)
-            .first()
-        )
-        if not exists:
-            db.add(Revision(topic_id=topic_id, revision_date=d))
-            added += 1
+        db.add(Revision(topic_id=topic_id, revision_date=d))
+        added += 1
 
     db.commit()
 
-    total = len(topic.revisions)
-    completed = sum(1 for r in topic.revisions if r.completed)
+    stats = (
+        db.query(
+            func.count(Revision.id),
+            func.sum(cast(Revision.completed, Integer)),
+        )
+        .filter(Revision.topic_id == topic_id)
+        .first()
+    )
+    total = stats[0] or 0
+    completed = stats[1] or 0
 
     return {
         "message": "Schedule updated",
@@ -750,4 +753,18 @@ def get_streaks(db: Session = Depends(get_db), user_id: str = Depends(get_curren
             "days_remaining": milestone_data["days_remaining"],
         },
         "streak_dates": streak_data["streak_dates"],
+    }
+
+
+# ------------------------------------------
+# Bundled refresh (single round-trip)
+# ------------------------------------------
+
+@app.get("/refresh")
+def refresh_all(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    return {
+        "topics": list_topics(db=db, user_id=user_id),
+        "revisions": list_revision_summary(db=db, user_id=user_id),
+        "streaks": get_streaks(db=db, user_id=user_id),
+        "today": revision_detail(iso_date=date.today().isoformat(), db=db, user_id=user_id),
     }

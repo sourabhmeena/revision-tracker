@@ -10,7 +10,6 @@ load_dotenv(Path(__file__).resolve().parent / ".env")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
-    from pathlib import Path
     _DB_PATH = Path(__file__).resolve().parent / "revision.db"
     DATABASE_URL = f"sqlite:///{_DB_PATH}"
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
 import type { RevisionListItem, ModalData } from "../app/types";
@@ -17,7 +17,7 @@ export default function UpcomingList() {
   const [modalData, setModalData] = useState<ModalData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [showCelebration, setShowCelebration] = useState(false);
-  const [lastCompletedDate, setLastCompletedDate] = useState<string | null>(null);
+  const lastCompletedDate = useRef<string | null>(null);
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const todayIso = localIso();
@@ -53,9 +53,9 @@ export default function UpcomingList() {
         const res = await API.get<ModalData>(`/revision-date/${modalData.iso_date}`);
         const fresh = res.data.topics;
         const allCompleted = fresh.length > 0 && fresh.every((t) => t.completed);
-        if (allCompleted && modalData.iso_date !== lastCompletedDate) {
+        if (allCompleted && modalData.iso_date !== lastCompletedDate.current) {
           setShowCelebration(true);
-          setLastCompletedDate(modalData.iso_date);
+          lastCompletedDate.current = modalData.iso_date;
         }
       } catch {
         // If fetch fails, skip celebration check

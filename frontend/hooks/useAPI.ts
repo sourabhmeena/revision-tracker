@@ -39,12 +39,86 @@ export function useTodayRevisions() {
   return useSWR<ModalData>(`/revision-date/${today}`, fetcher);
 }
 
-export function invalidateTopics() {
-  mutate("/topics");
-  mutate("/revisions");
-  mutate("/streaks");
+// ---------- Optimistic revision toggle ----------
+
+export async function optimisticToggleRevision({
+  revisionId,
+  newCompleted,
+  topicId,
+  isoDate,
+}: {
+  revisionId: string;
+  newCompleted: boolean;
+  topicId: string;
+  isoDate: string;
+}) {
+  const delta = newCompleted ? 1 : -1;
+
+  mutate(
+    `/revision-date/${isoDate}`,
+    (cur: ModalData | undefined) => {
+      if (!cur) return cur;
+      return {
+        ...cur,
+        topics: cur.topics.map((t) =>
+          t.revision_id === revisionId ? { ...t, completed: newCompleted } : t
+        ),
+      };
+    },
+    false,
+  );
+
+  mutate(
+    "/revisions",
+    (cur: RevisionListItem[] | undefined) => {
+      if (!cur) return cur;
+      return cur.map((r) =>
+        r.iso_date === isoDate ? { ...r, done: r.done + delta } : r
+      );
+    },
+    false,
+  );
+
+  mutate(
+    "/topics",
+    (cur: TopicSummary[] | undefined) => {
+      if (!cur) return cur;
+      return cur.map((t) => {
+        if (t.id !== topicId) return t;
+        const completed = t.completed_revisions + delta;
+        return {
+          ...t,
+          completed_revisions: completed,
+          progress_percent: t.total_revisions > 0
+            ? Math.round((completed / t.total_revisions) * 100)
+            : 0,
+        };
+      });
+    },
+    false,
+  );
+
+  try {
+    await API.patch(`/revision/${revisionId}`, { completed: newCompleted });
+    mutate("/streaks");
+  } catch (err) {
+    mutate(`/revision-date/${isoDate}`);
+    mutate("/revisions");
+    mutate("/topics");
+    mutate("/streaks");
+    throw err;
+  }
+}
+
+// ---------- Single-call full refresh ----------
+
+export async function refreshAll() {
+  const { data } = await API.get("/refresh");
   const today = localIso();
-  mutate(`/revision-date/${today}`);
+  mutate("/topics", data.topics, false);
+  mutate("/revisions", data.revisions, false);
+  mutate("/streaks", data.streaks, false);
+  mutate(`/revision-date/${today}`, data.today, false);
 }
 
 export function invalidateSettings() {
