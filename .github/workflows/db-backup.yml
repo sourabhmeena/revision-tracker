@@ -1,0 +1,28 @@
+name: Weekly DB Backup
+
+on:
+  schedule:
+    - cron: "0 3 * * 0" # Every Sunday at 3 AM UTC
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          pg_dump "$DATABASE_URL" --no-owner --no-acl > backup.sql
+          echo "Backup size: $(wc -c < backup.sql) bytes"
+          echo "Tables found: $(grep -c 'CREATE TABLE' backup.sql)"
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backup.sql
+          retention-days: 90
