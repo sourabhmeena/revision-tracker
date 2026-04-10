@@ -1,0 +1,25 @@
+backend/main.py
+  2a76a59fc03bf81e 13-14,305-317,320-322,330-332,588-600,602-611,621
+backend/models.py
+  2a76a59fc03bf81e 4,82-85,88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "5cef20d264ff1ae52ec399d5177c0868150b87d1",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 53,
+      "total_deletions": 32,
+      "accepted_lines": 53,
+      "overriden_lines": 0
+    }
+  }
+}
