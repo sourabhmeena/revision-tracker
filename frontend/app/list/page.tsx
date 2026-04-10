@@ -12,8 +12,8 @@ export default function ListView() {
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
+        <div className="text-xl dark:text-gray-200">Loading...</div>
       </div>
     );
   }
@@ -21,13 +21,13 @@ export default function ListView() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-4 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
               List View
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               View all your upcoming revisions in chronological order
             </p>
           </div>

@@ -4,15 +4,22 @@ export default function DayRing({
   day,
   done,
   total,
+  overdue = false,
 }: {
   day: number;
   done: number;
   total: number;
+  overdue?: boolean;
 }) {
   const progress = total === 0 ? 0 : done / total;
 
-  const ringColor =
-    progress === 1 ? "#22c55e" : progress > 0 ? "#3b82f6" : "#d1d5db";
+  const ringColor = overdue
+    ? "#ef4444"
+    : progress === 1
+    ? "#22c55e"
+    : progress > 0
+    ? "#3b82f6"
+    : "#d1d5db";
 
   return (
     <>
@@ -31,7 +38,7 @@ export default function DayRing({
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
         </svg>
-        <div className="absolute text-[10px] font-semibold">
+        <div className={`absolute text-[10px] font-semibold ${overdue ? "text-red-600" : ""}`}>
           {progress === 1 ? "✓" : day}
         </div>
       </div>
@@ -51,7 +58,7 @@ export default function DayRing({
             transition={{ duration: 0.8, ease: "easeOut" }}
           />
         </svg>
-        <div className="absolute text-sm font-semibold">
+        <div className={`absolute text-sm font-semibold ${overdue ? "text-red-600" : ""}`}>
           {progress === 1 ? "✓" : day}
         </div>
       </div>

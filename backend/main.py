@@ -87,7 +87,23 @@ try:
                     conn.execute(text("ALTER TABLE topics ADD COLUMN revision_intervals VARCHAR"))
                 if "repeat_interval" not in topic_col_names:
                     conn.execute(text("ALTER TABLE topics ADD COLUMN repeat_interval INTEGER"))
+                if "category" not in topic_col_names:
+                    conn.execute(text("ALTER TABLE topics ADD COLUMN category VARCHAR"))
+                if "chapter" not in topic_col_names:
+                    conn.execute(text("ALTER TABLE topics ADD COLUMN chapter VARCHAR"))
+                if "description" not in topic_col_names:
+                    conn.execute(text("ALTER TABLE topics ADD COLUMN description VARCHAR"))
 
+            conn.commit()
+    else:
+        with engine.connect() as conn:
+            for col_name in ("category", "chapter", "description"):
+                result = conn.execute(text(
+                    "SELECT column_name FROM information_schema.columns "
+                    f"WHERE table_name='topics' AND column_name='{col_name}'"
+                ))
+                if not result.fetchone():
+                    conn.execute(text(f"ALTER TABLE topics ADD COLUMN {col_name} VARCHAR"))
             conn.commit()
 except Exception:
     pass
@@ -324,6 +340,9 @@ def list_topics(db: Session = Depends(get_db), user_id: str = Depends(get_curren
         result.append({
             "id": topic.id,
             "title": topic.title,
+            "category": topic.category,
+            "chapter": topic.chapter,
+            "description": topic.description,
             "created_at": topic.created_at.isoformat(),
             "created_at_formatted": format_date(topic.created_at),
             "total_revisions": total,
@@ -337,11 +356,33 @@ def list_topics(db: Session = Depends(get_db), user_id: str = Depends(get_curren
     return result
 
 
+def _title_case(s: str | None) -> str | None:
+    """Convert to Title Case for consistent display."""
+    if not s or not s.strip():
+        return None
+    return s.strip().title()
+
+
 @app.post("/topics")
 def create_topic(topic: TopicCreate, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     user = db.query(User).filter(User.id == user_id).first()
 
-    new_topic = Topic(user_id=user_id, title=topic.title, created_at=date.today())
+    existing = (
+        db.query(Topic)
+        .filter(Topic.user_id == user_id, func.lower(Topic.title) == topic.title.strip().lower())
+        .first()
+    )
+    if existing:
+        raise HTTPException(status_code=400, detail="A topic with this name already exists")
+
+    new_topic = Topic(
+        user_id=user_id,
+        title=topic.title.strip().title(),
+        category=_title_case(topic.category),
+        chapter=topic.chapter,
+        description=topic.description,
+        created_at=date.today(),
+    )
     db.add(new_topic)
     db.flush()
 
@@ -373,6 +414,9 @@ def get_topic(topic_id: str, db: Session = Depends(get_db), user_id: str = Depen
     return {
         "id": topic.id,
         "title": topic.title,
+        "category": topic.category,
+        "chapter": topic.chapter,
+        "description": topic.description,
         "created_at": topic.created_at.isoformat(),
         "created_at_formatted": format_date(topic.created_at),
         "total_revisions": total_revisions,
@@ -395,11 +439,36 @@ def update_topic(topic_id: str, topic_update: TopicUpdate, db: Session = Depends
     if not topic:
         raise HTTPException(status_code=404, detail="Topic not found")
 
-    topic.title = topic_update.title
+    if topic_update.title is not None:
+        new_title = topic_update.title.strip()
+        if new_title.lower() != topic.title.lower():
+            dup = (
+                db.query(Topic)
+                .filter(Topic.user_id == user_id, Topic.id != topic_id, func.lower(Topic.title) == new_title.lower())
+                .first()
+            )
+            if dup:
+                raise HTTPException(status_code=400, detail="A topic with this name already exists")
+        topic.title = new_title.title()
+    if topic_update.category is not None:
+        topic.category = _title_case(topic_update.category)
+    if topic_update.chapter is not None:
+        topic.chapter = topic_update.chapter if topic_update.chapter != "" else None
+    if topic_update.description is not None:
+        topic.description = topic_update.description if topic_update.description != "" else None
     db.commit()
     db.refresh(topic)
 
-    return {"message": "Topic updated successfully", "topic": {"id": topic.id, "title": topic.title}}
+    return {
+        "message": "Topic updated successfully",
+        "topic": {
+            "id": topic.id,
+            "title": topic.title,
+            "category": topic.category,
+            "chapter": topic.chapter,
+            "description": topic.description,
+        },
+    }
 
 
 @app.post("/topics/{topic_id}/extend-revisions")
@@ -628,6 +697,9 @@ def revision_detail(iso_date: str, db: Session = Depends(get_db), user_id: str =
             "revision_id": r.id,
             "topic_id": r.topic.id,
             "title": r.topic.title,
+            "category": r.topic.category,
+            "chapter": r.topic.chapter,
+            "description": r.topic.description,
             "completed": r.completed,
         })
 

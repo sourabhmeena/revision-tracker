@@ -50,7 +50,7 @@ export default function TopicChecklist({ topics }: TopicChecklistProps) {
               ${
                 item.completed
                   ? "bg-green-500 text-white scale-110 border-green-500"
-                  : "bg-white text-gray-400 group-hover:border-blue-400"
+                  : "bg-white dark:bg-gray-700 text-gray-400 group-hover:border-blue-400"
               }
             `}
           >
@@ -58,8 +58,8 @@ export default function TopicChecklist({ topics }: TopicChecklistProps) {
           </div>
 
           <span
-            className={`text-gray-700 text-lg transition-colors ${
-              item.completed ? "line-through text-gray-400" : ""
+            className={`text-gray-700 dark:text-gray-200 text-lg transition-colors ${
+              item.completed ? "line-through text-gray-400 dark:text-gray-500" : ""
             }`}
           >
             {item.title}

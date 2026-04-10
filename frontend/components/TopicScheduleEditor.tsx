@@ -94,14 +94,14 @@ export default function TopicScheduleEditor({
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.2 }}
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-2xl">
+        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 rounded-t-2xl">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-800">Edit Schedule</h2>
-              <p className="text-sm text-gray-500 mt-0.5">{topicTitle}</p>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Edit Schedule</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{topicTitle}</p>
             </div>
             {hasCustom && (
               <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">

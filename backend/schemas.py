@@ -13,10 +13,16 @@ class UserRegister(BaseModel):
 
 class TopicCreate(BaseModel):
     title: str
+    category: str | None = None
+    chapter: str | None = None
+    description: str | None = None
 
 
 class TopicUpdate(BaseModel):
-    title: str
+    title: str | None = None
+    category: str | None = None
+    chapter: str | None = None
+    description: str | None = None
 
 
 class SettingsUpdate(BaseModel):

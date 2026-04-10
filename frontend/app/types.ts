@@ -2,6 +2,9 @@ export interface RevisionTopic {
   revision_id: string;
   topic_id: string;
   title: string;
+  category: string | null;
+  chapter: string | null;
+  description: string | null;
   completed: boolean;
 }
 
@@ -23,6 +26,9 @@ export interface RevisionListItem {
 export interface TopicSummary {
   id: string;
   title: string;
+  category: string | null;
+  chapter: string | null;
+  description: string | null;
   created_at: string;
   created_at_formatted: string;
   total_revisions: number;

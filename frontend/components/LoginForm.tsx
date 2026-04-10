@@ -51,22 +51,22 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl p-8 shadow-2xl max-w-md w-full mx-auto"
+      className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl max-w-md w-full mx-auto"
     >
       <div className="text-center mb-8">
         <div className="text-5xl mb-4">🔐</div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-        <p className="text-lg text-gray-600">Sign in to your account</p>
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Welcome Back</h2>
+        <p className="text-lg text-gray-600 dark:text-gray-400">Sign in to your account</p>
       </div>
 
       {/* Tab Toggle */}
-      <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
+      <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1 mb-6">
         <button
           onClick={() => setTab("login")}
           className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
             tab === "login"
-              ? "bg-white shadow-sm text-blue-600"
-              : "text-gray-600 hover:text-gray-800"
+              ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400"
+              : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           }`}
         >
           Login
@@ -75,8 +75,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           onClick={() => setTab("register")}
           className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
             tab === "register"
-              ? "bg-white shadow-sm text-blue-600"
-              : "text-gray-600 hover:text-gray-800"
+              ? "bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400"
+              : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           }`}
         >
           Register
@@ -99,7 +99,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
-          className="w-full px-4 py-4 border-2 border-gray-300 rounded-xl text-xl font-medium text-gray-900 text-center bg-white shadow-inner focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:shadow-lg transition-all duration-200 placeholder-gray-500"
+          className="w-full px-4 py-4 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-xl font-medium text-gray-900 dark:text-gray-100 text-center bg-white dark:bg-gray-700 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 focus:shadow-lg transition-all duration-200 placeholder-gray-500"
         />
         <div className="relative">
           <input
@@ -107,7 +107,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password (8+ chars)"
-            className="w-full px-4 py-4 pr-12 border-2 border-gray-300 rounded-xl text-xl font-medium text-gray-900 text-center bg-white shadow-inner focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:shadow-lg transition-all duration-200 placeholder-gray-500"
+            className="w-full px-4 py-4 pr-12 border-2 border-gray-300 dark:border-gray-600 rounded-xl text-xl font-medium text-gray-900 dark:text-gray-100 text-center bg-white dark:bg-gray-700 shadow-inner focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/40 focus:shadow-lg transition-all duration-200 placeholder-gray-500"
           />
           <button
             type="button"

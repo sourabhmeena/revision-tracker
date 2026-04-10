@@ -46,7 +46,7 @@ export default function MonthYearPicker({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-2xl font-semibold text-gray-800 hover:text-blue-600 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100"
+        className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
         title="Select month and year"
       >
         {format(currentDate, "MMMM yyyy")} ▾
@@ -62,10 +62,9 @@ export default function MonthYearPicker({
           ></div>
 
           {/* Picker Content */}
-          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-4 w-80">
-            {/* Year Selection */}
+          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 p-4 w-80">
             <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
                 Year
               </h3>
               <div className="grid grid-cols-4 gap-2">
@@ -80,7 +79,7 @@ export default function MonthYearPicker({
                       ${
                         year === currentYear
                           ? "bg-blue-600 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
                       }
                     `}
                   >
@@ -90,9 +89,8 @@ export default function MonthYearPicker({
               </div>
             </div>
 
-            {/* Month Selection */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-600 mb-2">
+              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
                 Month
               </h3>
               <div className="grid grid-cols-3 gap-2">
@@ -107,7 +105,7 @@ export default function MonthYearPicker({
                       ${
                         idx === currentMonth
                           ? "bg-blue-600 text-white"
-                          : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
                       }
                     `}
                   >

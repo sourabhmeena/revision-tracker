@@ -53,6 +53,9 @@ class Topic(Base):
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     created_at = Column(Date, nullable=False)
+    category = Column(String, nullable=True)
+    chapter = Column(String, nullable=True)
+    description = Column(String, nullable=True)
     # Per-topic overrides.  NULL → inherit from user settings (or global defaults).
     revision_intervals = Column(String, nullable=True)
     repeat_interval = Column(Integer, nullable=True)

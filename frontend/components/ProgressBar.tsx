@@ -11,7 +11,7 @@ export default function ProgressBar({
 
   return (
     <div className="w-full mt-4">
-      <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+      <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
         <motion.div
           initial={{ width: "0%" }}
           animate={{ width: `${value}%` }}

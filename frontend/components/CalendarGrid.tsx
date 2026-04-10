@@ -81,7 +81,7 @@ export default function CalendarGrid() {
       <div className="flex justify-between items-center mb-4 md:mb-6">
         <button
           onClick={goToPreviousMonth}
-          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
+          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold text-gray-700 dark:text-gray-200"
           title="Previous month"
         >
           &lsaquo;
@@ -107,14 +107,14 @@ export default function CalendarGrid() {
 
         <button
           onClick={goToNextMonth}
-          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
+          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-bold text-gray-700 dark:text-gray-200"
           title="Next month"
         >
           &rsaquo;
         </button>
       </div>
 
-      <div className="grid grid-cols-7 text-center mb-2 md:mb-3 font-semibold text-gray-600 text-xs md:text-base">
+      <div className="grid grid-cols-7 text-center mb-2 md:mb-3 font-semibold text-gray-600 dark:text-gray-400 text-xs md:text-base">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
           <div key={d} className="hidden md:block">{d}</div>
         ))}
@@ -134,9 +134,11 @@ export default function CalendarGrid() {
         >
           {days.map((day) => {
             const iso = format(day, "yyyy-MM-dd");
+            const todayIso = format(new Date(), "yyyy-MM-dd");
             const inMonth = day.getMonth() === currentMonth.getMonth();
             const stats = statsByDate[iso];
             const isCurrentDay = isToday(day);
+            const isOverdue = stats && stats.total > 0 && stats.done < stats.total && iso < todayIso;
 
             return (
               <div
@@ -149,10 +151,12 @@ export default function CalendarGrid() {
                   relative
                   ${
                     inMonth
-                      ? "bg-white hover:bg-blue-100 hover:shadow-md"
-                      : "bg-gray-100 text-gray-400"
+                      ? isOverdue
+                        ? "bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 hover:shadow-md"
+                        : "bg-white dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 hover:shadow-md"
+                      : "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600"
                   }
-                  ${stats ? "border-blue-400 shadow-sm" : "border-gray-200"}
+                  ${isOverdue ? "border-red-400 dark:border-red-700 shadow-sm" : stats ? "border-blue-400 dark:border-blue-600 shadow-sm" : "border-gray-200 dark:border-gray-700"}
                   ${isCurrentDay && inMonth ? "ring-2 ring-blue-500 ring-offset-1 md:ring-offset-2" : ""}
                 `}
               >
@@ -164,6 +168,7 @@ export default function CalendarGrid() {
                   day={parseInt(format(day, "d"))}
                   done={stats?.done ?? 0}
                   total={stats?.total ?? 0}
+                  overdue={!!isOverdue}
                 />
 
                 {stats && stats.total > 0 && (
