@@ -10,7 +10,8 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from sqlalchemy import func, cast, Integer
+from sqlalchemy.orm import Session, subqueryload
 
 try:
     from .database import engine, SessionLocal, DATABASE_URL
@@ -300,12 +301,25 @@ def reset_settings(db: Session = Depends(get_db), user_id: str = Depends(get_cur
 @app.get("/topics")
 def list_topics(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
     user = db.query(User).filter(User.id == user_id).first()
-    topics = db.query(Topic).filter(Topic.user_id == user_id).order_by(Topic.created_at.desc()).all()
+
+    # Single query: topics + aggregated revision counts (no N+1)
+    rows = (
+        db.query(
+            Topic,
+            func.count(Revision.id).label("total"),
+            func.sum(cast(Revision.completed, Integer)).label("done"),
+        )
+        .outerjoin(Revision, Revision.topic_id == Topic.id)
+        .filter(Topic.user_id == user_id)
+        .group_by(Topic.id)
+        .order_by(Topic.created_at.desc())
+        .all()
+    )
 
     result = []
-    for topic in topics:
-        total_revisions = len(topic.revisions)
-        completed_revisions = sum(1 for r in topic.revisions if r.completed)
+    for topic, total, done in rows:
+        total = total or 0
+        done = done or 0
         intervals, repeat = _effective_schedule(topic, user)
 
         result.append({
@@ -313,9 +327,9 @@ def list_topics(db: Session = Depends(get_db), user_id: str = Depends(get_curren
             "title": topic.title,
             "created_at": topic.created_at.isoformat(),
             "created_at_formatted": format_date(topic.created_at),
-            "total_revisions": total_revisions,
-            "completed_revisions": completed_revisions,
-            "progress_percent": round((completed_revisions / total_revisions * 100) if total_revisions > 0 else 0, 1),
+            "total_revisions": total,
+            "completed_revisions": done,
+            "progress_percent": round((done / total * 100) if total > 0 else 0, 1),
             "has_custom_schedule": topic.revision_intervals is not None,
             "intervals": intervals,
             "repeat_interval": repeat,
@@ -571,28 +585,30 @@ def reset_topic_schedule(topic_id: str, db: Session = Depends(get_db), user_id: 
 
 @app.get("/revisions")
 def list_revision_summary(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
-    revisions = db.query(Revision).join(Revision.topic).filter(Topic.user_id == user_id).all()
+    # Single GROUP BY query instead of loading all rows into Python
+    rows = (
+        db.query(
+            Revision.revision_date,
+            func.count(Revision.id).label("total"),
+            func.sum(cast(Revision.completed, Integer)).label("done"),
+        )
+        .join(Revision.topic)
+        .filter(Topic.user_id == user_id)
+        .group_by(Revision.revision_date)
+        .order_by(Revision.revision_date.asc())
+        .all()
+    )
 
-    grouped: dict[str, dict] = defaultdict(lambda: {"done": 0, "total": 0})
-
-    for r in revisions:
-        iso = r.revision_date.isoformat()
-        grouped[iso]["total"] += 1
-        if r.completed:
-            grouped[iso]["done"] += 1
-
-    response = []
-    for iso, stats in grouped.items():
-        dt = date.fromisoformat(iso)
-        response.append({
-            "iso_date": iso,
-            "date": format_date(dt),
-            "done": stats["done"],
-            "total": stats["total"],
-            "progress_percent": year_progress(dt),
-        })
-
-    return sorted(response, key=lambda x: x["iso_date"])
+    return [
+        {
+            "iso_date": row.revision_date.isoformat(),
+            "date": format_date(row.revision_date),
+            "done": row.done or 0,
+            "total": row.total or 0,
+            "progress_percent": year_progress(row.revision_date),
+        }
+        for row in rows
+    ]
 
 
 @app.get("/revision-date/{iso_date}")
@@ -602,6 +618,7 @@ def revision_detail(iso_date: str, db: Session = Depends(get_db), user_id: str =
     revisions = (
         db.query(Revision)
         .join(Revision.topic)
+        .options(subqueryload(Revision.topic))
         .filter(Revision.revision_date == dt, Topic.user_id == user_id)
         .all()
     )

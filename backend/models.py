@@ -1,7 +1,7 @@
 import json
 import uuid
 
-from sqlalchemy import Column, String, Date, Boolean, ForeignKey, Integer
+from sqlalchemy import Column, String, Date, Boolean, ForeignKey, Integer, Index
 from sqlalchemy.orm import relationship
 
 try:
@@ -79,9 +79,13 @@ class Topic(Base):
 
 class Revision(Base):
     __tablename__ = "revisions"
+    __table_args__ = (
+        Index("ix_revisions_topic_date", "topic_id", "revision_date"),
+        Index("ix_revisions_date", "revision_date"),
+    )
 
     id = Column(String, primary_key=True, default=uid)
-    topic_id = Column(String, ForeignKey("topics.id"))
+    topic_id = Column(String, ForeignKey("topics.id"), index=True)
     revision_date = Column(Date, nullable=False)
     completed = Column(Boolean, default=False)
 
