@@ -1,0 +1,49 @@
+frontend/app/topics/[id]/page.tsx
+  2a76a59fc03bf81e 9,53-54,56-57,59-63,67-85,253
+frontend/components/UpcomingList.tsx
+  2a76a59fc03bf81e 3,20,56,58
+frontend/components/Providers.tsx
+  2a76a59fc03bf81e 1-16
+frontend/app/login/page.tsx
+  2a76a59fc03bf81e 3,8,11
+backend/streak_calculator.py
+  2a76a59fc03bf81e 5
+frontend/hooks/useAPI.ts
+  2a76a59fc03bf81e 42-116,118-121
+frontend/components/TodayWidget.tsx
+  2a76a59fc03bf81e 3,8-14,62
+frontend/components/TopicForm.tsx
+  2a76a59fc03bf81e 6,36
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 11,101,123,134,150,529,531
+frontend/components/TopicChecklist.tsx
+  2a76a59fc03bf81e 4,9,12,27-32
+frontend/app/layout.tsx
+  2a76a59fc03bf81e 5,53-56
+frontend/components/DateModal.tsx
+  2a76a59fc03bf81e 40
+backend/test_revision_schedule.py
+  2a76a59fc03bf81e 12
+backend/main.py
+  2a76a59fc03bf81e 139,398-403,479,482-485,488,577-581,595-598,601,603-604,608-617,757-770
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "e350cff03f2e6a5744cc402fe9ce1d6511feb853",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 216,
+      "total_deletions": 91,
+      "accepted_lines": 216,
+      "overriden_lines": 0
+    }
+  }
+}
