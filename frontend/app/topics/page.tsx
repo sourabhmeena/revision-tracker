@@ -138,35 +138,37 @@ export default function TopicsPage() {
           </div>
 
           {showAddForm && (
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md mb-6">
+            <div className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-md mb-6">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">
                 Add New Topic
               </h3>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <input
                   type="text"
                   value={newTopicTitle}
                   onChange={(e) => setNewTopicTitle(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
                   placeholder="Enter topic name..."
-                  className="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 placeholder-gray-400"
+                  className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 placeholder-gray-400"
                   autoFocus
                 />
-                <button
-                  onClick={handleAddTopic}
-                  className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                >
-                  Add
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setNewTopicTitle("");
-                  }}
-                  className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors"
-                >
-                  Cancel
-                </button>
+                <div className="flex gap-2 shrink-0">
+                  <button
+                    onClick={handleAddTopic}
+                    className="flex-1 sm:flex-none px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                  >
+                    Add
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddForm(false);
+                      setNewTopicTitle("");
+                    }}
+                    className="flex-1 sm:flex-none px-5 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -198,7 +200,7 @@ export default function TopicsPage() {
                   className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                 >
                   {editingId === topic.id ? (
-                    <div className="flex gap-3 items-center">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                       <input
                         type="text"
                         value={editTitle}
@@ -206,21 +208,23 @@ export default function TopicsPage() {
                         onKeyDown={(e) =>
                           e.key === "Enter" && handleUpdateTopic(topic.id)
                         }
-                        className="flex-grow px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 placeholder-gray-400"
+                        className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 placeholder-gray-400"
                         autoFocus
                       />
-                      <button
-                        onClick={() => handleUpdateTopic(topic.id)}
-                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={cancelEdit}
-                        className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors"
-                      >
-                        Cancel
-                      </button>
+                      <div className="flex gap-2 shrink-0">
+                        <button
+                          onClick={() => handleUpdateTopic(topic.id)}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          className="flex-1 sm:flex-none px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium rounded-lg transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

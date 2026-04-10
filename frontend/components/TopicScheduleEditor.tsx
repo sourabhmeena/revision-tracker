@@ -228,11 +228,11 @@ export default function TopicScheduleEditor({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-2xl flex items-center gap-3">
+        <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 md:px-6 py-4 rounded-b-2xl flex flex-wrap items-center gap-2 md:gap-3">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
+            className="px-4 md:px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
           >
             {saving ? "Saving..." : "Save & Reschedule"}
           </button>
@@ -240,7 +240,7 @@ export default function TopicScheduleEditor({
             <button
               onClick={handleReset}
               disabled={saving}
-              className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
+              className="px-4 md:px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
             >
               Reset to Default
             </button>
@@ -248,7 +248,7 @@ export default function TopicScheduleEditor({
           <div className="flex-grow" />
           <button
             onClick={onClose}
-            className="px-5 py-2.5 text-gray-500 hover:text-gray-700 font-medium rounded-lg transition-colors text-sm"
+            className="px-4 md:px-5 py-2.5 text-gray-500 hover:text-gray-700 font-medium rounded-lg transition-colors text-sm"
           >
             Cancel
           </button>
