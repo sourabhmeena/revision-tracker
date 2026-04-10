@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import useDarkMode from "../hooks/useDarkMode";
 
 const navItems = [
@@ -57,16 +57,6 @@ const navItems = [
 export default function Navigation() {
   const pathname = usePathname();
   const { dark, toggle: toggleDark } = useDarkMode();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
-  }, []);
-
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
 
   return (
     <>
@@ -75,11 +65,7 @@ export default function Navigation() {
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex items-center justify-between h-14">
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-                </svg>
-              </div>
+              <Image src="/logo.png" alt="Recall Smart" width={32} height={32} className="rounded-lg" />
               <span className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-100">
                 Recall Smart
               </span>
@@ -95,7 +81,7 @@ export default function Navigation() {
                     className={`
                       flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all
                       ${isActive
-                        ? "bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400"
+                        ? "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400"
                         : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"}
                     `}
                   >
@@ -120,15 +106,6 @@ export default function Navigation() {
                   </svg>
                 )}
               </button>
-              {isLoggedIn ? (
-                <button onClick={logout} className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                  Logout
-                </button>
-              ) : (
-                <Link href="/login" className="px-4 py-1.5 text-sm font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
-                  Login
-                </Link>
-              )}
             </div>
           </div>
         </div>
@@ -138,41 +115,26 @@ export default function Navigation() {
       <nav className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 relative z-40">
         <div className="flex items-center justify-between h-12 px-4">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500 to-cyan-400 flex items-center justify-center">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-              </svg>
-            </div>
+            <Image src="/logo.png" alt="Recall Smart" width={28} height={28} className="rounded-lg" />
             <span className="text-sm font-semibold tracking-tight text-gray-900 dark:text-gray-100">
               Recall Smart
             </span>
           </Link>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={toggleDark}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
-              title="Toggle dark mode"
-            >
-              {dark ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
-                </svg>
-              )}
-            </button>
-            {isLoggedIn ? (
-              <button onClick={logout} className="px-2.5 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                Logout
-              </button>
+          <button
+            onClick={toggleDark}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400"
+            title="Toggle dark mode"
+          >
+            {dark ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
             ) : (
-              <Link href="/login" className="px-3 py-1 text-xs font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors">
-                Login
-              </Link>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
             )}
-          </div>
+          </button>
         </div>
       </nav>
 
@@ -187,7 +149,7 @@ export default function Navigation() {
                 href={item.href}
                 className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
                   isActive
-                    ? "text-sky-500 dark:text-sky-400"
+                    ? "text-violet-600 dark:text-violet-400"
                     : "text-gray-400 dark:text-gray-500"
                 }`}
               >

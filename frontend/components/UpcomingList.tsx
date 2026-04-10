@@ -93,7 +93,7 @@ export default function UpcomingList() {
                   onClick={() => { setFilter(key); setCurrentPage(1); }}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     filter === key
-                      ? "bg-blue-600 text-white"
+                      ? "bg-violet-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
@@ -157,7 +157,7 @@ export default function UpcomingList() {
                         className="text-left w-full"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <div className={`text-xl font-semibold hover:underline ${isOverdue ? "text-red-600 dark:text-red-400" : "text-blue-600 dark:text-blue-400"}`}>
+                          <div className={`text-xl font-semibold hover:underline ${isOverdue ? "text-red-600 dark:text-red-400" : "text-violet-600 dark:text-violet-400"}`}>
                             {item.date || item.iso_date}
                           </div>
                           {isComplete && (
@@ -193,7 +193,7 @@ export default function UpcomingList() {
                         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
                           <motion.div
                             className={`h-3 rounded-full transition-all ${
-                              isComplete ? "bg-green-500" : "bg-blue-600"
+                              isComplete ? "bg-green-500" : "bg-violet-600"
                             }`}
                             initial={{ width: 0 }}
                             animate={{ width: `${percent}%` }}
@@ -217,7 +217,7 @@ export default function UpcomingList() {
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 currentPage === 1
                   ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/60"
+                  : "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900/60"
               }`}
             >
               &larr; Previous
@@ -247,7 +247,7 @@ export default function UpcomingList() {
                     onClick={() => goToPage(page)}
                     className={`px-4 py-2 rounded-lg font-medium transition-all ${
                       currentPage === page
-                        ? "bg-blue-600 text-white shadow-md scale-110"
+                        ? "bg-violet-600 text-white shadow-md scale-110"
                         : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
@@ -263,7 +263,7 @@ export default function UpcomingList() {
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 currentPage === totalPages
                   ? "bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/60"
+                  : "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 hover:bg-violet-200 dark:hover:bg-violet-900/60"
               }`}
             >
               Next &rarr;

@@ -65,7 +65,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           onClick={() => setTab("login")}
           className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
             tab === "login"
-              ? "bg-white dark:bg-gray-600 shadow-sm text-sky-600 dark:text-sky-400"
+              ? "bg-white dark:bg-gray-600 shadow-sm text-violet-600 dark:text-violet-400"
               : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           }`}
         >
@@ -75,7 +75,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           onClick={() => setTab("register")}
           className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all ${
             tab === "register"
-              ? "bg-white dark:bg-gray-600 shadow-sm text-sky-600 dark:text-sky-400"
+              ? "bg-white dark:bg-gray-600 shadow-sm text-violet-600 dark:text-violet-400"
               : "text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
           }`}
         >
@@ -121,7 +121,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         <button
           onClick={submitForm}
           disabled={loading}
-          className="w-full py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl text-lg shadow-lg focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-sky-200 transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-600 disabled:shadow-none disabled:cursor-not-allowed"
+          className="w-full py-4 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-lg shadow-lg focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-violet-200 transition-all duration-200 disabled:bg-gray-200 disabled:text-gray-600 disabled:shadow-none disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">

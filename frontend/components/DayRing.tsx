@@ -18,7 +18,7 @@ export default function DayRing({
     : progress === 1
     ? "#22c55e"
     : progress > 0
-    ? "#3b82f6"
+    ? "#8b5cf6"
     : "#d1d5db";
 
   return (

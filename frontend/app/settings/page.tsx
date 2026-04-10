@@ -6,10 +6,21 @@ import Navigation from "../../components/Navigation";
 import { API } from "../api";
 import useAuth from "../useAuth";
 import { useSettings, invalidateSettings } from "../../hooks/useAPI";
+import useSWR from "swr";
+
+interface ProfileData {
+  email: string;
+  created_at: string;
+  topic_count: number;
+  completed_revisions: number;
+}
+
+const fetcher = (url: string) => API.get(url).then((r) => r.data);
 
 export default function SettingsPage() {
   const isLoggedIn = useAuth();
   const { data: settings, isLoading: loading } = useSettings();
+  const { data: profile } = useSWR<ProfileData>(isLoggedIn ? "/me" : null, fetcher);
   const [intervals, setIntervals] = useState<number[]>([]);
   const [repeatInterval, setRepeatInterval] = useState<number>(30);
   const [saving, setSaving] = useState(false);
@@ -104,11 +115,52 @@ export default function SettingsPage() {
         <div className="max-w-3xl mx-auto">
           <div className="mb-4 md:mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-              Revision Schedule Settings
+              Settings
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Customise the spaced repetition intervals used when creating new topics
+              Your profile and revision schedule preferences
             </p>
+          </div>
+
+          {/* ── Profile card ── */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 md:p-6 border border-gray-200 dark:border-gray-700 shadow-sm mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-400 via-violet-500 to-blue-500 flex items-center justify-center text-white text-lg font-bold shrink-0">
+                  {profile?.email?.charAt(0).toUpperCase() ?? "?"}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
+                    {profile?.email ?? "Loading..."}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    {profile ? `Member since ${new Date(profile.created_at).toLocaleDateString("en-US", { month: "long", year: "numeric" })}` : "\u00A0"}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.href = "/login";
+                }}
+                className="px-3 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors shrink-0"
+              >
+                Logout
+              </button>
+            </div>
+
+            {profile && (
+              <div className="grid grid-cols-2 gap-4 mt-5 pt-5 border-t border-gray-100 dark:border-gray-700">
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.topic_count}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Topics</p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile.completed_revisions}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Revisions completed</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {loading ? (
@@ -266,7 +318,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="w-full sm:w-auto px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : saved ? "Saved!" : "Save Settings"}
                 </button>

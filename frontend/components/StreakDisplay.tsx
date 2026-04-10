@@ -18,7 +18,7 @@ export default function StreakDisplay({
   daysRemaining,
 }: StreakDisplayProps) {
   return (
-    <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 md:p-6 text-white shadow-lg">
+    <div className="bg-gradient-to-r from-rose-500 to-violet-600 rounded-xl p-4 md:p-6 text-white shadow-lg">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
         {/* Current Streak */}
         <div className="flex-1">
@@ -39,7 +39,7 @@ export default function StreakDisplay({
             </motion.div>
             <div>
               <h3 className="text-base md:text-lg font-semibold">Current Streak</h3>
-              <p className="text-xs md:text-sm text-orange-100">Keep it going!</p>
+              <p className="text-xs md:text-sm text-rose-100">Keep it going!</p>
             </div>
           </div>
           <motion.div
@@ -63,7 +63,7 @@ export default function StreakDisplay({
             <div className="text-3xl md:text-4xl">🏆</div>
             <div>
               <h3 className="text-base md:text-lg font-semibold">Best Streak</h3>
-              <p className="text-xs md:text-sm text-orange-100">Personal record</p>
+              <p className="text-xs md:text-sm text-rose-100">Personal record</p>
             </div>
           </div>
           <div className="text-3xl md:text-5xl font-bold">

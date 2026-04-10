@@ -16,7 +16,7 @@ export default function ProgressBar({
           initial={{ width: "0%" }}
           animate={{ width: `${value}%` }}
           transition={{ duration: 1 }}
-          className="h-full bg-blue-600 rounded-full"
+          className="h-full bg-violet-600 rounded-full"
         ></motion.div>
       </div>
     </div>

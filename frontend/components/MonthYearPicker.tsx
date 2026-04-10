@@ -46,7 +46,7 @@ export default function MonthYearPicker({
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+        className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
         title="Select month and year"
       >
         {format(currentDate, "MMMM yyyy")} ▾
@@ -78,7 +78,7 @@ export default function MonthYearPicker({
                       px-3 py-2 rounded-lg text-sm font-medium transition-colors
                       ${
                         year === currentYear
-                          ? "bg-blue-600 text-white"
+                          ? "bg-violet-600 text-white"
                           : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
                       }
                     `}
@@ -104,7 +104,7 @@ export default function MonthYearPicker({
                       px-3 py-2 rounded-lg text-sm font-medium transition-colors
                       ${
                         idx === currentMonth
-                          ? "bg-blue-600 text-white"
+                          ? "bg-violet-600 text-white"
                           : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
                       }
                     `}

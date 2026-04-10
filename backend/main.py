@@ -219,6 +219,27 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
 
 
 # ------------------------------------------
+# Profile
+# ------------------------------------------
+
+@app.get("/me")
+def get_profile(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    topic_count = db.query(func.count(Topic.id)).filter(Topic.user_id == user_id).scalar()
+    completed = db.query(func.count(Revision.id)).join(Topic).filter(
+        Topic.user_id == user_id, Revision.completed == True
+    ).scalar()
+    return {
+        "email": user.email,
+        "created_at": user.created_at.isoformat(),
+        "topic_count": topic_count,
+        "completed_revisions": completed,
+    }
+
+
+# ------------------------------------------
 # Settings (revision intervals)
 # ------------------------------------------
 

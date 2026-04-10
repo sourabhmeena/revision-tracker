@@ -45,7 +45,7 @@ export default function TodayWidget() {
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100">Today&apos;s Revisions</h2>
         <span className={`text-xs font-bold px-2 py-1 rounded-full ${
-          allDone ? "bg-green-500 text-white" : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+          allDone ? "bg-green-500 text-white" : "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300"
         }`}>
           {doneCount}/{topics.length}
         </span>

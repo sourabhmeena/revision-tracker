@@ -98,7 +98,7 @@ export default function CalendarGrid() {
 
           <button
             onClick={goToToday}
-            className="px-3 md:px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium transition-colors text-xs md:text-sm"
+            className="px-3 md:px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-700 text-white font-medium transition-colors text-xs md:text-sm"
             title="Go to today"
           >
             Today
@@ -152,15 +152,15 @@ export default function CalendarGrid() {
                     inMonth
                       ? isOverdue
                         ? "bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 hover:shadow-md"
-                        : "bg-white dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-gray-700 hover:shadow-md"
+                        : "bg-white dark:bg-gray-800 hover:bg-violet-50 dark:hover:bg-gray-700 hover:shadow-md"
                       : "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-600"
                   }
-                  ${isOverdue ? "border-red-400 dark:border-red-700 shadow-sm" : stats ? "border-blue-400 dark:border-blue-600 shadow-sm" : "border-gray-200 dark:border-gray-700"}
-                  ${isCurrentDay && inMonth ? "ring-2 ring-blue-500 ring-offset-1 md:ring-offset-2" : ""}
+                  ${isOverdue ? "border-red-400 dark:border-red-700 shadow-sm" : stats ? "border-violet-400 dark:border-violet-600 shadow-sm" : "border-gray-200 dark:border-gray-700"}
+                  ${isCurrentDay && inMonth ? "ring-2 ring-violet-500 ring-offset-1 md:ring-offset-2" : ""}
                 `}
               >
                 {isCurrentDay && (
-                  <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-violet-500 rounded-full"></div>
                 )}
 
                 <DayRing
