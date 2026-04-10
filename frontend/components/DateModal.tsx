@@ -16,7 +16,7 @@ export default function DateModal({ data, onClose, refresh }: DateModalProps) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <motion.div
@@ -24,7 +24,7 @@ export default function DateModal({ data, onClose, refresh }: DateModalProps) {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.25 }}
-        className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl shadow-xl w-full max-w-md"
+        className="bg-white/80 backdrop-blur-xl p-5 md:p-6 rounded-2xl shadow-xl w-full max-w-md"
       >
         <div className="text-2xl font-semibold">{data.date || data.iso_date}</div>
 

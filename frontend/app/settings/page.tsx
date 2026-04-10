@@ -129,10 +129,10 @@ export default function SettingsPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
         <div className="max-w-3xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <div className="mb-4 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
               Revision Schedule Settings
             </h1>
             <p className="text-gray-600">
@@ -180,15 +180,15 @@ export default function SettingsPage() {
                         exit={{ opacity: 0, height: 0 }}
                         className="flex items-center gap-3"
                       >
-                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-sm font-bold shrink-0">
+                        <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs md:text-sm font-bold shrink-0">
                           {index + 1}
                         </div>
 
-                        <div className="flex items-center gap-2 flex-grow">
+                        <div className="flex items-center gap-1.5 md:gap-2 flex-grow min-w-0">
                           <button
                             onClick={() => updateInterval(index, value - 1)}
                             disabled={value <= 1}
-                            className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="w-10 h-10 md:w-9 md:h-9 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                           >
                             &minus;
                           </button>
@@ -197,24 +197,23 @@ export default function SettingsPage() {
                             min={1}
                             value={value}
                             onChange={(e) => updateInterval(index, parseInt(e.target.value) || 1)}
-                            className="w-20 text-center px-3 py-2 border border-gray-300 rounded-lg text-gray-900 font-semibold focus:border-blue-500 focus:ring-0 outline-none"
+                            className="w-14 md:w-20 text-center px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-gray-900 font-semibold text-base focus:border-blue-500 focus:ring-0 outline-none"
                           />
                           <button
                             onClick={() => updateInterval(index, value + 1)}
-                            className="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg transition-colors"
+                            className="w-10 h-10 md:w-9 md:h-9 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-lg transition-colors shrink-0"
                           >
                             +
                           </button>
-                          <span className="text-sm text-gray-500 ml-1">
-                            days &nbsp;
-                            <span className="text-gray-400">(Day {cumulativeDays[index]})</span>
+                          <span className="text-xs md:text-sm text-gray-500 ml-1 hidden sm:inline">
+                            days <span className="text-gray-400">(Day {cumulativeDays[index]})</span>
                           </span>
                         </div>
 
                         <button
                           onClick={() => removeInterval(index)}
                           disabled={intervals.length <= 1}
-                          className="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                          className="w-10 h-10 md:w-9 md:h-9 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                           title="Remove"
                         >
                           &times;
@@ -292,11 +291,11 @@ export default function SettingsPage() {
               )}
 
               {/* Action buttons */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
                 <button
                   onClick={handleSave}
                   disabled={saving}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? "Saving..." : saved ? "Saved!" : "Save Settings"}
                 </button>
@@ -304,7 +303,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleReset}
                   disabled={saving}
-                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50"
+                  className="w-full sm:w-auto px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50"
                 >
                   Reset to Defaults
                 </button>
@@ -313,7 +312,7 @@ export default function SettingsPage() {
                   <motion.span
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="text-green-600 font-medium"
+                    className="text-green-600 font-medium text-sm"
                   >
                     Settings saved successfully
                   </motion.span>

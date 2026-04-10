@@ -90,17 +90,17 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
   }, [items]);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div className="p-1 md:p-4">
+      <div className="flex justify-between items-center mb-4 md:mb-6">
         <button
           onClick={goToPreviousMonth}
-          className="text-xl px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
+          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
           title="Previous month"
         >
           &lsaquo;
         </button>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           <MonthYearPicker
             currentDate={currentMonth}
             onDateChange={(newDate) => {
@@ -111,7 +111,7 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
 
           <button
             onClick={goToToday}
-            className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-sm"
+            className="px-3 md:px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors text-xs md:text-sm"
             title="Go to today"
           >
             Today
@@ -120,16 +120,19 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
 
         <button
           onClick={goToNextMonth}
-          className="text-xl px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
+          className="text-xl px-2 md:px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors font-bold text-gray-700"
           title="Next month"
         >
           &rsaquo;
         </button>
       </div>
 
-      <div className="grid grid-cols-7 text-center mb-3 font-semibold text-gray-600">
+      <div className="grid grid-cols-7 text-center mb-2 md:mb-3 font-semibold text-gray-600 text-xs md:text-base">
         {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => (
-          <div key={d}>{d}</div>
+          <div key={d} className="hidden md:block">{d}</div>
+        ))}
+        {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+          <div key={i} className="md:hidden">{d}</div>
         ))}
       </div>
 
@@ -140,7 +143,7 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: direction * -50 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="grid grid-cols-7 gap-2"
+          className="grid grid-cols-7 gap-1 md:gap-2"
         >
           {days.map((day) => {
             const iso = format(day, "yyyy-MM-dd");
@@ -153,7 +156,7 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
                 key={iso}
                 onClick={() => openModal(day)}
                 className={`
-                  h-20 rounded-xl border cursor-pointer
+                  h-12 md:h-20 rounded-lg md:rounded-xl border cursor-pointer
                   flex items-center justify-center
                   transition-all
                   relative
@@ -163,7 +166,7 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
                       : "bg-gray-100 text-gray-400"
                   }
                   ${stats ? "border-blue-400 shadow-sm" : "border-gray-200"}
-                  ${isCurrentDay && inMonth ? "ring-2 ring-blue-500 ring-offset-2" : ""}
+                  ${isCurrentDay && inMonth ? "ring-2 ring-blue-500 ring-offset-1 md:ring-offset-2" : ""}
                 `}
               >
                 {isCurrentDay && (
@@ -177,7 +180,7 @@ export default function CalendarGrid({ refreshKey, onRefresh }: CalendarGridProp
                 />
 
                 {stats && stats.total > 0 && (
-                  <div className="absolute bottom-1 left-1 bg-gray-700 text-white text-xs font-bold px-1.5 py-0.5 rounded-md">
+                  <div className="absolute bottom-0.5 left-0.5 md:bottom-1 md:left-1 bg-gray-700 text-white text-[10px] md:text-xs font-bold px-1 md:px-1.5 py-0 md:py-0.5 rounded-md">
                     {stats.done}/{stats.total}
                   </div>
                 )}

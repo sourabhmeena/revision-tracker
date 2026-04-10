@@ -116,21 +116,21 @@ export default function TopicsPage() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
         <div className="max-w-5xl mx-auto">
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-4 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-1 md:mb-2">
                 Manage Topics
               </h1>
-              <p className="text-gray-600">
+              <p className="text-sm md:text-base text-gray-600">
                 Add, edit, or delete your learning topics
               </p>
             </div>
 
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+              className="px-5 py-2.5 md:px-6 md:py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 self-start md:self-auto"
             >
               <span className="text-xl">+</span>
               <span>Add New Topic</span>
@@ -195,7 +195,7 @@ export default function TopicsPage() {
               {topics.map((topic) => (
                 <div
                   key={topic.id}
-                  className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                  className="bg-white rounded-xl p-4 md:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
                 >
                   {editingId === topic.id ? (
                     <div className="flex gap-3 items-center">
@@ -223,15 +223,15 @@ export default function TopicsPage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between">
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-grow min-w-0">
+                        <h3 className="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">
                           {topic.title}
                         </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600">
                           <span>Created: {topic.created_at_formatted}</span>
                           <span>
-                            {topic.completed_revisions} / {topic.total_revisions} revisions completed
+                            {topic.completed_revisions} / {topic.total_revisions} revisions
                           </span>
                           {topic.has_custom_schedule && (
                             <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
@@ -243,7 +243,7 @@ export default function TopicsPage() {
                           Schedule: +{topic.intervals.join(", +")} then every {topic.repeat_interval}d
                         </div>
 
-                        <div className="mt-3 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                        <div className="mt-2 md:mt-3 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                           <div
                             className="bg-blue-600 h-2 rounded-full transition-all"
                             style={{ width: `${topic.progress_percent}%` }}
@@ -254,31 +254,31 @@ export default function TopicsPage() {
                         </div>
                       </div>
 
-                      <div className="flex gap-2 ml-6">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => startEdit(topic)}
-                          className="px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 font-medium rounded-lg transition-colors"
+                          className="px-3 md:px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-700 text-sm font-medium rounded-lg transition-colors"
                           title="Edit topic name"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => setScheduleTopic(topic)}
-                          className="px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 font-medium rounded-lg transition-colors"
+                          className="px-3 md:px-4 py-2 bg-purple-100 hover:bg-purple-200 text-purple-700 text-sm font-medium rounded-lg transition-colors"
                           title="Edit revision schedule"
                         >
                           Schedule
                         </button>
                         <button
                           onClick={() => handleExtendRevisions(topic.id, topic.title)}
-                          className="px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 font-medium rounded-lg transition-colors"
+                          className="px-3 md:px-4 py-2 bg-green-100 hover:bg-green-200 text-green-700 text-sm font-medium rounded-lg transition-colors"
                           title="Extend revisions"
                         >
                           Extend
                         </button>
                         <button
                           onClick={() => handleDeleteTopic(topic.id, topic.title)}
-                          className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-medium rounded-lg transition-colors"
+                          className="px-3 md:px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 text-sm font-medium rounded-lg transition-colors"
                           title="Delete topic"
                         >
                           Delete

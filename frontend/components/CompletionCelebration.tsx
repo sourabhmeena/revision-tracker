@@ -53,7 +53,7 @@ export default function CompletionCelebration({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
             onClick={onClose}
           >
             {/* Celebration Card */}
@@ -62,7 +62,7 @@ export default function CompletionCelebration({
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
               transition={{ type: "spring", duration: 0.6 }}
-              className="bg-white rounded-2xl p-8 shadow-2xl max-w-md text-center"
+              className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl w-full max-w-md text-center"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Trophy Animation */}

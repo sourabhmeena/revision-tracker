@@ -22,14 +22,14 @@ export default function Home() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 p-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto space-y-6 md:space-y-8">
           {/* Welcome Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white shadow-lg">
-            <h1 className="text-4xl font-bold mb-2">
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-5 md:p-8 text-white shadow-lg">
+            <h1 className="text-2xl md:text-4xl font-bold mb-2">
               Welcome to Revision Planner
             </h1>
-            <p className="text-blue-100 text-lg">
+            <p className="text-blue-100 text-sm md:text-lg">
               Master your learning with scientifically-proven spaced repetition
             </p>
           </div>
@@ -41,9 +41,9 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link href="/topics">
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md hover:shadow-xl transition-all cursor-pointer group">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="text-4xl">📚</div>
-                  <h2 className="text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                <div className="flex items-center gap-3 md:gap-4 mb-3">
+                  <div className="text-3xl md:text-4xl">📚</div>
+                  <h2 className="text-xl md:text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                     Manage Topics
                   </h2>
                 </div>
@@ -59,9 +59,9 @@ export default function Home() {
 
             <Link href="/list">
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md hover:shadow-xl transition-all cursor-pointer group">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="text-4xl">📋</div>
-                  <h2 className="text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                <div className="flex items-center gap-3 md:gap-4 mb-3">
+                  <div className="text-3xl md:text-4xl">📋</div>
+                  <h2 className="text-xl md:text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                     List View
                   </h2>
                 </div>
@@ -77,9 +77,9 @@ export default function Home() {
 
             <Link href="/calendar">
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-md hover:shadow-xl transition-all cursor-pointer group">
-                <div className="flex items-center gap-4 mb-3">
-                  <div className="text-4xl">📅</div>
-                  <h2 className="text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                <div className="flex items-center gap-3 md:gap-4 mb-3">
+                  <div className="text-3xl md:text-4xl">📅</div>
+                  <h2 className="text-xl md:text-2xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
                     Calendar View
                   </h2>
                 </div>

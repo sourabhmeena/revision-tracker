@@ -21,10 +21,10 @@ export default function CalendarView() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 p-8">
+      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <div className="mb-4 md:mb-8">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
               Calendar View
             </h1>
             <p className="text-gray-600">
@@ -32,7 +32,7 @@ export default function CalendarView() {
             </p>
           </div>
 
-          <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+          <div className="bg-white shadow-lg rounded-xl p-2 md:p-6 border border-gray-200">
             <CalendarGrid refreshKey={refreshKey} onRefresh={triggerRefresh} />
           </div>
 
