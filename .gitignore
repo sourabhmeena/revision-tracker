@@ -1,0 +1,35 @@
+# Environment & secrets
+.env
+.env*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# SQLite databases
+*.db
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Vercel
+.vercel
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
