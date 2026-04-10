@@ -1,0 +1,43 @@
+frontend/components/Navigation.tsx
+  2a76a59fc03bf81e 9,25-28,35,37-40,42-43,51-52,61,65,70-82,85-119,122
+frontend/components/CalendarGrid.tsx
+  2a76a59fc03bf81e 93-94,97,103,114,123,130,132-135,146,159,169,183
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 119,121,123,126,133,198,226-228,231,234,246,257,260,267,274,281
+frontend/app/list/page.tsx
+  2a76a59fc03bf81e 46,48-49
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 132,134-135,183,187,191,200,204,208-209,216,294,298,306,315
+frontend/components/DayRing.tsx
+  2a76a59fc03bf81e 18-37,39-56,58
+frontend/components/DateModal.tsx
+  2a76a59fc03bf81e 19,27
+frontend/app/calendar/page.tsx
+  2a76a59fc03bf81e 24,26-27,35
+frontend/app/page.tsx
+  2a76a59fc03bf81e 25-26,28-29,32,44-46,62-64,80-82
+frontend/components/StreakDisplay.tsx
+  2a76a59fc03bf81e 21-22,27,41-42,49,52,57-58,63,65-66,69,71,78-79,101
+frontend/components/CompletionCelebration.tsx
+  2a76a59fc03bf81e 56,65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "7d62d52c32f2d15922b36575acdad14d00693643",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 193,
+      "total_deletions": 152,
+      "accepted_lines": 193,
+      "overriden_lines": 0
+    }
+  }
+}
