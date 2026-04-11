@@ -135,7 +135,7 @@ export default function TopicScheduleEditor({
                       min={1}
                       value={value}
                       onChange={(e) => updateInterval(index, parseInt(e.target.value) || 1)}
-                      className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-blue-500 focus:ring-0 outline-none"
+                      className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-violet-500 focus:ring-0 outline-none"
                     />
                     <button
                       onClick={() => updateInterval(index, value + 1)}
@@ -157,7 +157,7 @@ export default function TopicScheduleEditor({
               </AnimatePresence>
               <button
                 onClick={addInterval}
-                className="w-full py-1.5 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-blue-400 hover:text-blue-600 transition-colors text-sm font-medium"
+                className="w-full py-1.5 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-violet-400 hover:text-violet-600 transition-colors text-sm font-medium"
               >
                 + Add interval
               </button>
@@ -180,7 +180,7 @@ export default function TopicScheduleEditor({
                 min={1}
                 value={repeatInterval}
                 onChange={(e) => setRepeatInterval(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-blue-500 focus:ring-0 outline-none"
+                className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-violet-500 focus:ring-0 outline-none"
               />
               <button
                 onClick={() => setRepeatInterval((v) => v + 1)}

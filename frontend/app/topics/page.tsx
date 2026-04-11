@@ -215,7 +215,7 @@ export default function TopicsPage() {
                     onChange={(e) => setNewTopicTitle(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
                     placeholder="Topic name..."
-                    className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                    className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                     autoFocus
                   />
                   <input
@@ -225,7 +225,7 @@ export default function TopicsPage() {
                     onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
                     placeholder="Category (optional)"
                     list="topics-category-suggestions"
-                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                   />
                   <input
                     type="text"
@@ -233,7 +233,7 @@ export default function TopicsPage() {
                     onChange={(e) => setNewTopicChapter(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
                     placeholder="Chapter (optional)"
-                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -266,7 +266,7 @@ export default function TopicsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search topics..."
-                className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white dark:bg-gray-800"
+                className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white dark:bg-gray-800"
               />
               <select
                 value={sortBy}
@@ -342,7 +342,7 @@ export default function TopicsPage() {
                             e.key === "Enter" && handleUpdateTopic(topic.id)
                           }
                           placeholder="Topic name"
-                          className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                          className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                           autoFocus
                         />
                         <input
@@ -354,7 +354,7 @@ export default function TopicsPage() {
                           }
                           placeholder="Category (optional)"
                           list="topics-category-suggestions"
-                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                         />
                         <input
                           type="text"
@@ -364,7 +364,7 @@ export default function TopicsPage() {
                             e.key === "Enter" && handleUpdateTopic(topic.id)
                           }
                           placeholder="Chapter (optional)"
-                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
                         />
                       </div>
                       <textarea
@@ -372,7 +372,7 @@ export default function TopicsPage() {
                         onChange={(e) => setEditDescription(e.target.value)}
                         placeholder="Notes (optional)"
                         rows={3}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y"
+                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y"
                       />
                       <div className="flex gap-2">
                         <button
@@ -393,7 +393,7 @@ export default function TopicsPage() {
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div className="flex-grow min-w-0">
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 md:mb-2">
-                          <Link href={`/topics/${topic.id}`} className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                          <Link href={`/topics/${topic.id}`} className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
                             {topic.title}
                           </Link>
                           {(topic.category || topic.chapter) && (

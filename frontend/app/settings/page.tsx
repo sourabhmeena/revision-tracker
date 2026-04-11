@@ -350,7 +350,7 @@ export default function SettingsPage() {
                             min={1}
                             value={value}
                             onChange={(e) => updateInterval(index, parseInt(e.target.value) || 1)}
-                            className="w-14 md:w-20 text-center px-2 md:px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 font-semibold text-base focus:border-blue-500 focus:ring-0 outline-none"
+                            className="w-14 md:w-20 text-center px-2 md:px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 font-semibold text-base focus:border-violet-500 focus:ring-0 outline-none"
                           />
                           <button
                             onClick={() => updateInterval(index, value + 1)}
@@ -377,7 +377,7 @@ export default function SettingsPage() {
 
                   <button
                     onClick={addInterval}
-                    className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium"
+                    className="w-full py-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-gray-500 dark:text-gray-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors font-medium"
                   >
                     + Add interval
                   </button>
@@ -403,7 +403,7 @@ export default function SettingsPage() {
                     min={1}
                     value={repeatInterval}
                     onChange={(e) => setRepeatInterval(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-20 text-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 font-semibold focus:border-blue-500 focus:ring-0 outline-none"
+                    className="w-20 text-center px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg text-gray-900 dark:text-gray-100 font-semibold focus:border-violet-500 focus:ring-0 outline-none"
                   />
                   <button
                     onClick={() => setRepeatInterval((v) => v + 1)}
@@ -482,6 +482,9 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+        <p className="text-center text-xs text-gray-400 dark:text-gray-600 py-6 pb-20 md:pb-6">
+          Made by Sourabh Meena &middot; &copy; 2026
+        </p>
       </div>
     </>
   );

@@ -177,14 +177,14 @@ export default function TopicDetailPage() {
                 value={editChapter}
                 onChange={(e) => setEditChapter(e.target.value)}
                 placeholder="Chapter (e.g. Ch. 5-7)"
-                className="w-full mb-3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                className="w-full mb-3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
               />
               <textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 placeholder="Notes — focus areas, page numbers, key concepts..."
                 rows={4}
-                className="w-full mb-3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-blue-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y"
+                className="w-full mb-3 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y"
               />
               <div className="flex gap-2">
                 <button
@@ -254,7 +254,7 @@ export default function TopicDetailPage() {
                     className={`w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
                       r.completed
                         ? "bg-green-500 border-green-500 text-white"
-                        : "border-gray-300 dark:border-gray-500 hover:border-blue-500"
+                        : "border-gray-300 dark:border-gray-500 hover:border-violet-500"
                     }`}
                   >
                     {r.completed && (
