@@ -73,8 +73,8 @@ export default function TodayWidget() {
             transition={{ duration: 0.2 }}
             className={`flex gap-3 p-2.5 rounded-lg transition-colors ${
               t.completed
-                ? "bg-gray-50 dark:bg-gray-800/50"
-                : "bg-white dark:bg-gray-750 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                ? "bg-gray-50 dark:bg-gray-700/30"
+                : "hover:bg-gray-50 dark:hover:bg-gray-700/40"
             }`}
           >
             <button

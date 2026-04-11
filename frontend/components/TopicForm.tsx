@@ -1,9 +1,97 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
 import { refreshAll, useTopics } from "../hooks/useAPI";
+
+function MarqueeInput({
+  value,
+  onChange,
+  onKeyDown,
+  placeholder,
+  className,
+  list,
+  grow,
+}: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  className?: string;
+  list?: string;
+  grow?: boolean;
+}) {
+  const [focused, setFocused] = useState(false);
+  const measRef = useRef<HTMLSpanElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [needsMarquee, setNeedsMarquee] = useState(false);
+  const [inputWidth, setInputWidth] = useState<number | undefined>(undefined);
+
+  const checkOverflow = useCallback(() => {
+    if (!measRef.current || !wrapRef.current) return;
+    const textW = measRef.current.scrollWidth;
+    const boxW = wrapRef.current.clientWidth - 32;
+    setNeedsMarquee(textW > boxW);
+  }, []);
+
+  useEffect(() => {
+    checkOverflow();
+    window.addEventListener("resize", checkOverflow);
+    return () => window.removeEventListener("resize", checkOverflow);
+  }, [checkOverflow, placeholder]);
+
+  useEffect(() => {
+    if (grow && value && measRef.current) {
+      const textW = measRef.current.scrollWidth;
+      setInputWidth(Math.max(textW + 40, 120));
+    } else if (grow) {
+      setInputWidth(undefined);
+    }
+  }, [value, grow]);
+
+  const showPlaceholder = !value && !focused;
+
+  return (
+    <div
+      ref={wrapRef}
+      className={`relative overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 transition-all duration-200 focus-within:border-violet-500 dark:focus-within:border-violet-400 ${className ?? ""}`}
+      style={grow && inputWidth ? { width: inputWidth, maxWidth: "100%" } : undefined}
+    >
+      <input
+        value={value}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        list={list}
+        placeholder={focused ? placeholder : ""}
+        className="w-full px-3 md:px-4 py-2 bg-transparent focus:ring-0 outline-none text-gray-800 dark:text-gray-100 placeholder:text-gray-400 relative z-10"
+      />
+      <AnimatePresence>
+        {showPlaceholder && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className="absolute inset-0 flex items-center pointer-events-none overflow-hidden px-3 md:px-4"
+          >
+            <span
+              className={`text-gray-400 whitespace-nowrap ${needsMarquee ? "animate-marquee" : ""}`}
+            >
+              <span>{placeholder}</span>
+              {needsMarquee && <span className="pl-12">{placeholder}</span>}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      <span ref={measRef} className="absolute invisible whitespace-nowrap text-sm px-1" aria-hidden>
+        {grow ? value || "x" : placeholder}
+      </span>
+    </div>
+  );
+}
 
 export default function TopicForm() {
   const { data: topics = [] } = useTopics();
@@ -65,21 +153,21 @@ export default function TopicForm() {
       </h2>
 
       <div className="flex flex-col gap-2 md:gap-3">
-        <div className="flex gap-2 md:gap-3">
-          <input
+        <div className="flex gap-2 md:gap-3 items-center">
+          <MarqueeInput
             value={title}
             onChange={(e) => { setTitle(e.target.value); setError(""); }}
             onKeyDown={(e) => e.key === "Enter" && !showDetails && addTopic()}
             placeholder="Topic name..."
-            className={`min-w-0 flex-1 ${inputClass}`}
+            className="min-w-0 flex-1 basis-0"
           />
-          <input
+          <MarqueeInput
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !showDetails && addTopic()}
             placeholder="Category (optional)"
             list="home-category-suggestions"
-            className={`w-32 sm:w-40 ${inputClass}`}
+            className="min-w-0 flex-1 basis-0"
           />
           <datalist id="home-category-suggestions">
             {existingCategories.map((c) => (
