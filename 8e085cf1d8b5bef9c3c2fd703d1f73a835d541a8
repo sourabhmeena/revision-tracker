@@ -1,0 +1,35 @@
+frontend/app/topics/page.tsx
+  2a76a59fc03bf81e 218,228,236,269,345,357,367,375,396
+frontend/components/InputModal.tsx
+  2a76a59fc03bf81e 54
+frontend/app/login/page.tsx
+  2a76a59fc03bf81e 18,20-22
+frontend/components/LoginForm.tsx
+  2a76a59fc03bf81e 54,56-63,67,70,80,94,100,106,114,119,121-130,137
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 353,380,406,485-487
+frontend/components/TopicScheduleEditor.tsx
+  2a76a59fc03bf81e 138,160,183
+frontend/app/topics/[id]/page.tsx
+  2a76a59fc03bf81e 180,187,257
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "8e085cf1d8b5bef9c3c2fd703d1f73a835d541a8",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 63,
+      "total_deletions": 41,
+      "accepted_lines": 57,
+      "overriden_lines": 0
+    }
+  }
+}
