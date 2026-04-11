@@ -1,0 +1,29 @@
+frontend/components/TopicForm.tsx
+  2a76a59fc03bf81e 19-22
+frontend/components/TopicChecklist.tsx
+  2a76a59fc03bf81e 4,33,35,37-38,40-44,47-51,53-64,67-100
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 35,234-277
+frontend/components/TodayWidget.tsx
+  2a76a59fc03bf81e 3,41,48,55-66,68,70-79,82,84-85,88-99,102-105,109,114,118-128,130,132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "81a4add20c4ff04a0d7a062a9b8e2c7d3b0de4ce",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 171,
+      "total_deletions": 70,
+      "accepted_lines": 171,
+      "overriden_lines": 0
+    }
+  }
+}
