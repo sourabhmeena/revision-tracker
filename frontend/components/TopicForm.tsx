@@ -16,7 +16,10 @@ export default function TopicForm() {
   const [success, setSuccess] = useState("");
 
   const addTopic = async () => {
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      setError("Topic name is required");
+      return;
+    }
     setError("");
     setSuccess("");
 

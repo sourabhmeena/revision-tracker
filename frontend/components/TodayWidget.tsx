@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import { useTodayRevisions, optimisticToggleRevision, localIso } from "../hooks/useAPI";
 
 export default function TodayWidget() {
@@ -37,64 +38,98 @@ export default function TodayWidget() {
   }
 
   return (
-    <div className={`shadow-md rounded-xl p-5 md:p-6 border ${
+    <div className={`shadow-md rounded-xl p-5 md:p-6 border transition-colors duration-300 ${
       allDone
         ? "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700"
         : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
     }`}>
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100">Today&apos;s Revisions</h2>
-        <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+        <span className={`text-xs font-bold px-2 py-1 rounded-full transition-colors ${
           allDone ? "bg-green-500 text-white" : "bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300"
         }`}>
           {doneCount}/{topics.length}
         </span>
       </div>
 
-      {allDone && (
-        <p className="text-green-700 dark:text-green-400 font-medium text-sm mb-3">All done for today!</p>
-      )}
+      <AnimatePresence>
+        {allDone && (
+          <motion.p
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="text-green-700 dark:text-green-400 font-medium text-sm mb-3"
+          >
+            All done for today!
+          </motion.p>
+        )}
+      </AnimatePresence>
 
-      <ul className="space-y-3">
+      <ul className="space-y-2">
         {topics.map((t) => (
-          <li key={t.revision_id} className="flex gap-3">
+          <motion.li
+            key={t.revision_id}
+            layout
+            transition={{ duration: 0.2 }}
+            className={`flex gap-3 p-2.5 rounded-lg transition-colors ${
+              t.completed
+                ? "bg-gray-50 dark:bg-gray-800/50"
+                : "bg-white dark:bg-gray-750 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+            }`}
+          >
             <button
               onClick={() => toggle(t.revision_id, t.topic_id, t.completed)}
-              className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+              className={`w-5 h-5 mt-0.5 rounded border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${
                 t.completed
-                  ? "bg-green-500 border-green-500 text-white"
-                  : "border-gray-300 dark:border-gray-500 hover:border-blue-500"
+                  ? "bg-green-500 border-green-500 text-white scale-110"
+                  : "border-gray-300 dark:border-gray-500 hover:border-violet-500 hover:scale-105"
               }`}
             >
-              {t.completed && (
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
+              <AnimatePresence>
+                {t.completed && (
+                  <motion.svg
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                    className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </motion.svg>
+                )}
+              </AnimatePresence>
             </button>
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                <span className={`text-sm font-medium ${t.completed ? "text-gray-400 line-through" : "text-gray-800 dark:text-gray-200"}`}>
+              <motion.div layout="position" className="flex flex-wrap items-start gap-x-2 gap-y-1">
+                <span className={`text-sm font-medium break-words transition-colors duration-200 ${
+                  t.completed ? "text-gray-400 dark:text-gray-500 line-through" : "text-gray-800 dark:text-gray-200"
+                }`}>
                   {t.title}
                 </span>
                 {t.category && (
-                  <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0">
                     {t.category}
                   </span>
                 )}
                 {t.chapter && (
-                  <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded-full font-medium">
+                  <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded-full font-medium whitespace-nowrap shrink-0">
                     {t.chapter}
                   </span>
                 )}
-              </div>
-              {t.description && !t.completed && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">
-                  {t.description}
-                </p>
-              )}
+              </motion.div>
+              <AnimatePresence>
+                {t.description && !t.completed && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="text-xs text-gray-500 dark:text-gray-400 mt-1 break-words"
+                  >
+                    {t.description}
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
-          </li>
+          </motion.li>
         ))}
       </ul>
     </div>
