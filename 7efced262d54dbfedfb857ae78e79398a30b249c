@@ -1,0 +1,27 @@
+frontend/app/settings/page.tsx
+  2a76a59fc03bf81e 29-34,103-134,204-272
+DEPLOYMENT.md
+  2a76a59fc03bf81e 1-294
+backend/main.py
+  2a76a59fc03bf81e 37,242-260
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "7efced262d54dbfedfb857ae78e79398a30b249c",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 421,
+      "total_deletions": 1,
+      "accepted_lines": 421,
+      "overriden_lines": 0
+    }
+  }
+}
