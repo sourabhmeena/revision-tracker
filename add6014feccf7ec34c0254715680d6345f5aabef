@@ -1,0 +1,23 @@
+frontend/app/login/page.tsx
+  2a76a59fc03bf81e 3,7-8,12-13,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "add6014feccf7ec34c0254715680d6345f5aabef",
+  "prompts": {
+    "2a76a59fc03bf81e": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "62698222-34ab-4cac-a645-7274bffb35d7",
+        "model": "claude-4.6-opus-high-thinking"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 1,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  }
+}
