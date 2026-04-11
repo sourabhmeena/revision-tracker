@@ -26,6 +26,12 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [confirmPw, setConfirmPw] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
+  const [pwMsg, setPwMsg] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [showPwForm, setShowPwForm] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -92,6 +98,38 @@ export default function SettingsPage() {
   const removeInterval = (index: number) => {
     if (intervals.length <= 1) return;
     setIntervals((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleChangePassword = async () => {
+    setPwMsg(null);
+    if (!currentPw || !newPw) {
+      setPwMsg({ type: "error", text: "Please fill in all fields" });
+      return;
+    }
+    if (newPw.length < 8) {
+      setPwMsg({ type: "error", text: "New password must be at least 8 characters" });
+      return;
+    }
+    if (newPw !== confirmPw) {
+      setPwMsg({ type: "error", text: "New passwords don't match" });
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await API.post("/me/change-password", {
+        current_password: currentPw,
+        new_password: newPw,
+      });
+      setPwMsg({ type: "success", text: "Password changed successfully" });
+      setCurrentPw("");
+      setNewPw("");
+      setConfirmPw("");
+      setShowPwForm(false);
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setPwMsg({ type: "error", text: msg || "Failed to change password" });
+    }
+    setPwSaving(false);
   };
 
   const cumulativeDays = intervals.reduce<number[]>((acc, gap) => {
@@ -161,6 +199,75 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* ── Change Password ── */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm mb-6 overflow-hidden">
+            <button
+              onClick={() => { setShowPwForm((v) => !v); setPwMsg(null); }}
+              className="w-full flex items-center justify-between p-5 md:p-6 text-left"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="w-5 h-5 text-gray-600 dark:text-gray-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                </div>
+                <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">Change Password</span>
+              </div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className={`w-5 h-5 text-gray-400 transition-transform ${showPwForm ? "rotate-180" : ""}`}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+              </svg>
+            </button>
+
+            <AnimatePresence>
+              {showPwForm && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-5 md:px-6 pb-5 md:pb-6 space-y-3">
+                    <input
+                      type="password"
+                      value={currentPw}
+                      onChange={(e) => setCurrentPw(e.target.value)}
+                      placeholder="Current password"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 text-sm"
+                    />
+                    <input
+                      type="password"
+                      value={newPw}
+                      onChange={(e) => setNewPw(e.target.value)}
+                      placeholder="New password (8+ characters)"
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 text-sm"
+                    />
+                    <input
+                      type="password"
+                      value={confirmPw}
+                      onChange={(e) => setConfirmPw(e.target.value)}
+                      placeholder="Confirm new password"
+                      onKeyDown={(e) => e.key === "Enter" && handleChangePassword()}
+                      className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 text-sm"
+                    />
+                    {pwMsg && (
+                      <p className={`text-sm ${pwMsg.type === "success" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
+                        {pwMsg.text}
+                      </p>
+                    )}
+                    <button
+                      onClick={handleChangePassword}
+                      disabled={pwSaving}
+                      className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
+                    >
+                      {pwSaving ? "Changing..." : "Update Password"}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {loading ? (

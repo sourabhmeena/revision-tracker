@@ -34,7 +34,7 @@ if not SECRET_KEY:
     SECRET_KEY = "dev-only-insecure-secret-do-not-use-in-production"
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "43200"))  # 30 days
 MIN_PASSWORD_LENGTH = 8
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -237,6 +237,25 @@ def get_profile(db: Session = Depends(get_db), user_id: str = Depends(get_curren
         "topic_count": topic_count,
         "completed_revisions": completed,
     }
+
+
+class ChangePassword(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@app.post("/me/change-password")
+def change_password(body: ChangePassword, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if not verify_password(body.current_password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(body.new_password) < MIN_PASSWORD_LENGTH:
+        raise HTTPException(status_code=400, detail=f"New password must be at least {MIN_PASSWORD_LENGTH} characters")
+    user.hashed_password = get_password_hash(body.new_password)
+    db.commit()
+    return {"detail": "Password changed successfully"}
 
 
 # ------------------------------------------
