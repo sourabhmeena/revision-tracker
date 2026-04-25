@@ -1,0 +1,25 @@
+backend/main.py
+  efe2607fbb9b42bf 47-58
+.github/workflows/keep-warm.yml
+  efe2607fbb9b42bf 1-48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "0a4d5a3d6296592a0ac9d79e72c45762d7a60c6f",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 61,
+      "total_deletions": 0,
+      "accepted_lines": 61,
+      "overriden_lines": 0
+    }
+  }
+}
