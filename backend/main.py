@@ -44,6 +44,19 @@ app = FastAPI(title="Revision Planner API")
 
 
 # ------------------------------------------
+# Health / keep-warm
+# ------------------------------------------
+# Intentionally does not open a DB session so external pings can keep
+# Render's container warm without waking Neon's compute (which has a
+# 191 compute-hour/month free-tier cap).
+
+@app.get("/ping")
+@app.get("/health")
+def ping():
+    return {"ok": True, "ts": datetime.now(timezone.utc).isoformat()}
+
+
+# ------------------------------------------
 # CORS
 # ------------------------------------------
 

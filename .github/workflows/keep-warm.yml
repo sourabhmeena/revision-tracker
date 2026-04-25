@@ -1,0 +1,48 @@
+name: Keep Render Warm
+
+# Pings the backend every 10 min during active hours so Render's free
+# tier doesn't spin down (15 min idle timeout, ~30-50s cold start).
+#
+# Hits /ping which does NOT touch the DB, so Neon stays asleep and
+# we don't burn its 191 compute-hour/month free-tier budget.
+#
+# Schedule window: 01:00 - 19:59 UTC = 06:30 - 01:30 IST (active hours).
+# Outside that window the backend is allowed to sleep.
+
+on:
+  schedule:
+    - cron: "*/10 1-19 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          if [ -z "$BACKEND_URL" ]; then
+            echo "ERROR: repo variable BACKEND_URL is not set"
+            echo "Set it under Settings -> Secrets and variables -> Actions -> Variables"
+            exit 1
+          fi
+
+          # Strip any trailing slash so we always hit ${URL}/ping cleanly.
+          URL="${BACKEND_URL%/}/ping"
+          echo "Pinging $URL"
+
+          # Retry up to 3x with backoff in case Render is mid-cold-start.
+          # --max-time 90 covers the worst-case ~50s cold start with margin.
+          for attempt in 1 2 3; do
+            if curl -fsS --max-time 90 "$URL"; then
+              echo
+              echo "Ping succeeded on attempt $attempt"
+              exit 0
+            fi
+            echo "Attempt $attempt failed, retrying in 15s..."
+            sleep 15
+          done
+
+          echo "All 3 attempts failed"
+          exit 1
