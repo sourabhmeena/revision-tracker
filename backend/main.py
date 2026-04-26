@@ -50,8 +50,8 @@ app = FastAPI(title="Revision Planner API")
 # Render's container warm without waking Neon's compute (which has a
 # 191 compute-hour/month free-tier cap).
 
-@app.get("/ping")
-@app.get("/health")
+@app.api_route("/ping", methods=["GET", "HEAD"])
+@app.api_route("/health", methods=["GET", "HEAD"])
 def ping():
     return {"ok": True, "ts": datetime.now(timezone.utc).isoformat()}
 
