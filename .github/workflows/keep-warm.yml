@@ -1,17 +1,16 @@
 name: Keep Render Warm
 
-# Pings the backend every 10 min during active hours so Render's free
-# tier doesn't spin down (15 min idle timeout, ~30-50s cold start).
+# Manual-only fallback. The scheduled cron was removed because GitHub
+# Actions free-tier silently drops most scheduled runs under load -
+# observed cadence was ~1-2 hours instead of the requested 10 min, so
+# Render was spinning down between runs anyway.
 #
-# Hits /ping which does NOT touch the DB, so Neon stays asleep and
-# we don't burn its 191 compute-hour/month free-tier budget.
-#
-# Schedule window: 01:00 - 19:59 UTC = 06:30 - 01:30 IST (active hours).
-# Outside that window the backend is allowed to sleep.
+# Primary keep-warm now runs in an external uptime pinger
+# (UptimeRobot / cron-job.org) hitting GET /ping every 5 min.
+# Keep this workflow around so we can still fire a manual ping from
+# the GitHub UI if the external pinger ever has an outage.
 
 on:
-  schedule:
-    - cron: "*/10 1-19 * * *"
   workflow_dispatch:
 
 jobs:
