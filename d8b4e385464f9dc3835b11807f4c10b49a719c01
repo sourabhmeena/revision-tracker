@@ -1,0 +1,25 @@
+frontend/app/layout.tsx
+  efe2607fbb9b42bf 26-30
+frontend/components/Navigation.tsx
+  efe2607fbb9b42bf 142-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "d8b4e385464f9dc3835b11807f4c10b49a719c01",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 6,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
