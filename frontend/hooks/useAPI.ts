@@ -52,12 +52,23 @@ export async function optimisticToggleRevision({
   topicId: string;
   isoDate: string;
 }) {
-  const delta = newCompleted ? 1 : -1;
+  // Derive the actual delta from the cached prior boolean instead of trusting
+  // the caller. If the revision is already in the target state (e.g. the
+  // caller used a stale `item.completed` from a frozen closure during a slow
+  // API call), this returns 0 and the count doesn't drift. Makes the entire
+  // optimistic update idempotent under any number of duplicate calls.
+  let actualDelta = newCompleted ? 1 : -1;
 
   mutate(
     `/revision-date/${isoDate}`,
     (cur: ModalData | undefined) => {
       if (!cur) return cur;
+      const prior = cur.topics.find((t) => t.revision_id === revisionId);
+      if (prior && prior.completed === newCompleted) {
+        // Cache already reflects the target state — this tap is a no-op.
+        actualDelta = 0;
+        return cur;
+      }
       return {
         ...cur,
         topics: cur.topics.map((t) =>
@@ -68,46 +79,50 @@ export async function optimisticToggleRevision({
     false,
   );
 
-  mutate(
-    "/revisions",
-    (cur: RevisionListItem[] | undefined) => {
-      if (!cur) return cur;
-      return cur.map((r) =>
-        r.iso_date === isoDate
-          ? { ...r, done: Math.max(0, Math.min(r.total, r.done + delta)) }
-          : r
-      );
-    },
-    false,
-  );
-
-  mutate(
-    "/topics",
-    (cur: TopicSummary[] | undefined) => {
-      if (!cur) return cur;
-      return cur.map((t) => {
-        if (t.id !== topicId) return t;
-        // Clamp to [0, total] so any race condition (e.g. duplicate toggles
-        // from a stale prop) can never render counts like "-12 of 1".
-        const completed = Math.max(
-          0,
-          Math.min(t.total_revisions, t.completed_revisions + delta),
+  if (actualDelta !== 0) {
+    mutate(
+      "/revisions",
+      (cur: RevisionListItem[] | undefined) => {
+        if (!cur) return cur;
+        return cur.map((r) =>
+          r.iso_date === isoDate
+            ? { ...r, done: Math.max(0, Math.min(r.total, r.done + actualDelta)) }
+            : r
         );
-        return {
-          ...t,
-          completed_revisions: completed,
-          progress_percent: t.total_revisions > 0
-            ? Math.round((completed / t.total_revisions) * 100)
-            : 0,
-        };
-      });
-    },
-    false,
-  );
+      },
+      false,
+    );
+
+    mutate(
+      "/topics",
+      (cur: TopicSummary[] | undefined) => {
+        if (!cur) return cur;
+        return cur.map((t) => {
+          if (t.id !== topicId) return t;
+          const completed = Math.max(
+            0,
+            Math.min(t.total_revisions, t.completed_revisions + actualDelta),
+          );
+          return {
+            ...t,
+            completed_revisions: completed,
+            progress_percent: t.total_revisions > 0
+              ? Math.round((completed / t.total_revisions) * 100)
+              : 0,
+          };
+        });
+      },
+      false,
+    );
+  }
 
   try {
-    await API.patch(`/revision/${revisionId}`, { completed: newCompleted });
-    mutate("/streaks");
+    // Skip the network call when the cache says nothing changed.
+    // Avoids burning Render hours on no-op PATCHes during rapid taps.
+    if (actualDelta !== 0) {
+      await API.patch(`/revision/${revisionId}`, { completed: newCompleted });
+      mutate("/streaks");
+    }
   } catch (err) {
     mutate(`/revision-date/${isoDate}`);
     mutate("/revisions");
