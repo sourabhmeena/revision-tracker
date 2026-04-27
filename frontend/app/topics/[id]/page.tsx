@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useSWR from "swr";
 import { API } from "../../api";
@@ -64,25 +64,41 @@ export default function TopicDetailPage() {
     setEditingDetails(false);
   };
 
+  // Per-revision in-flight lock to prevent rapid double-taps (during a
+  // slow API call) from drifting the optimistic counters out of bounds.
+  const inFlight = useRef<Set<string>>(new Set());
+
   const toggleRevision = async (revisionId: string, completed: boolean, revDate: string) => {
+    if (inFlight.current.has(revisionId)) return;
+    inFlight.current.add(revisionId);
     const newCompleted = !completed;
+    const delta = newCompleted ? 1 : -1;
     mutate(
       (cur) =>
         cur && {
           ...cur,
-          completed_revisions: cur.completed_revisions + (newCompleted ? 1 : -1),
+          // Clamp to [0, total] so any race condition can never produce
+          // counts outside the valid range (e.g. "-12 of 1").
+          completed_revisions: Math.max(
+            0,
+            Math.min(cur.total_revisions, cur.completed_revisions + delta),
+          ),
           revisions: cur.revisions.map((r) =>
             r.id === revisionId ? { ...r, completed: newCompleted } : r
           ),
         },
       false,
     );
-    await optimisticToggleRevision({
-      revisionId,
-      newCompleted,
-      topicId: id,
-      isoDate: revDate,
-    });
+    try {
+      await optimisticToggleRevision({
+        revisionId,
+        newCompleted,
+        topicId: id,
+        isoDate: revDate,
+      });
+    } finally {
+      inFlight.current.delete(revisionId);
+    }
   };
 
   if (!isLoggedIn) {

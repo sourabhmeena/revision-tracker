@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { optimisticToggleRevision } from "../hooks/useAPI";
 import type { RevisionTopic } from "../app/types";
@@ -16,7 +16,14 @@ export default function TopicChecklist({ topics, isoDate }: TopicChecklistProps)
     [topics],
   );
 
+  // Per-revision in-flight lock so rapid taps during a slow API call
+  // (e.g. cold-started Render) can't queue up duplicate toggles and
+  // drift the optimistic counters.
+  const inFlight = useRef<Set<string>>(new Set());
+
   const toggle = async (item: RevisionTopic) => {
+    if (inFlight.current.has(item.revision_id)) return;
+    inFlight.current.add(item.revision_id);
     try {
       await optimisticToggleRevision({
         revisionId: item.revision_id,
@@ -26,6 +33,8 @@ export default function TopicChecklist({ topics, isoDate }: TopicChecklistProps)
       });
     } catch (err) {
       console.error("Toggle error", err);
+    } finally {
+      inFlight.current.delete(item.revision_id);
     }
   };
 

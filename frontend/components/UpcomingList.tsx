@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { mutate } from "swr";
 import { API } from "../app/api";
 import type { RevisionListItem, ModalData } from "../app/types";
 import DateModal from "./DateModal";
@@ -44,21 +45,30 @@ export default function UpcomingList() {
 
   const openModal = async (item: RevisionListItem) => {
     const res = await API.get<ModalData>(`/revision-date/${item.iso_date}`);
+    // Seed the SWR cache so DateModal's useSWR + optimistic mutations
+    // share the same cache slot and stay in sync.
+    await mutate(`/revision-date/${item.iso_date}`, res.data, false);
     setModalData(res.data);
   };
 
   const handleModalClose = async () => {
     if (modalData) {
       try {
-        const res = await API.get<ModalData>(`/revision-date/${modalData.iso_date}`);
-        const fresh = res.data.topics;
-        const allCompleted = fresh.length > 0 && fresh.every((t) => t.completed);
+        // Read the live SWR cache (already kept in sync by optimistic
+        // mutations), no extra network call needed.
+        const fresh = await mutate<ModalData>(
+          `/revision-date/${modalData.iso_date}`,
+          undefined,
+          { revalidate: false },
+        );
+        const topics = fresh?.topics ?? [];
+        const allCompleted = topics.length > 0 && topics.every((t) => t.completed);
         if (allCompleted && modalData.iso_date !== lastCompletedDate.current) {
           setShowCelebration(true);
           lastCompletedDate.current = modalData.iso_date;
         }
       } catch {
-        // If fetch fails, skip celebration check
+        // If cache read fails, skip celebration check
       }
     }
     setModalData(null);

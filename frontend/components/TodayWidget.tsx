@@ -1,18 +1,28 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTodayRevisions, optimisticToggleRevision, localIso } from "../hooks/useAPI";
 
 export default function TodayWidget() {
   const { data, isLoading } = useTodayRevisions();
 
+  // Per-revision in-flight lock — see TopicChecklist for the why.
+  const inFlight = useRef<Set<string>>(new Set());
+
   const toggle = async (revisionId: string, topicId: string, completed: boolean) => {
-    await optimisticToggleRevision({
-      revisionId,
-      newCompleted: !completed,
-      topicId,
-      isoDate: localIso(),
-    });
+    if (inFlight.current.has(revisionId)) return;
+    inFlight.current.add(revisionId);
+    try {
+      await optimisticToggleRevision({
+        revisionId,
+        newCompleted: !completed,
+        topicId,
+        isoDate: localIso(),
+      });
+    } finally {
+      inFlight.current.delete(revisionId);
+    }
   };
 
   if (isLoading) {

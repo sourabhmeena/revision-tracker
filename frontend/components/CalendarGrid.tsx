@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { mutate } from "swr";
 import { API } from "../app/api";
 import type { ModalData } from "../app/types";
 import {
@@ -58,6 +59,8 @@ export default function CalendarGrid() {
   const openModal = async (dt: Date) => {
     const iso = format(dt, "yyyy-MM-dd");
     const res = await API.get<ModalData>(`/revision-date/${iso}`);
+    // Seed the SWR cache so DateModal stays in sync with optimistic mutations.
+    await mutate(`/revision-date/${iso}`, res.data, false);
     setModalData(res.data);
   };
 

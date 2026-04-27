@@ -73,7 +73,9 @@ export async function optimisticToggleRevision({
     (cur: RevisionListItem[] | undefined) => {
       if (!cur) return cur;
       return cur.map((r) =>
-        r.iso_date === isoDate ? { ...r, done: r.done + delta } : r
+        r.iso_date === isoDate
+          ? { ...r, done: Math.max(0, Math.min(r.total, r.done + delta)) }
+          : r
       );
     },
     false,
@@ -85,7 +87,12 @@ export async function optimisticToggleRevision({
       if (!cur) return cur;
       return cur.map((t) => {
         if (t.id !== topicId) return t;
-        const completed = t.completed_revisions + delta;
+        // Clamp to [0, total] so any race condition (e.g. duplicate toggles
+        // from a stale prop) can never render counts like "-12 of 1".
+        const completed = Math.max(
+          0,
+          Math.min(t.total_revisions, t.completed_revisions + delta),
+        );
         return {
           ...t,
           completed_revisions: completed,

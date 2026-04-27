@@ -1,6 +1,8 @@
 "use client";
 
+import useSWR from "swr";
 import { motion } from "framer-motion";
+import { API } from "../app/api";
 import ProgressBar from "./ProgressBar";
 import TopicChecklist from "./TopicChecklist";
 import type { ModalData } from "../app/types";
@@ -10,8 +12,23 @@ interface DateModalProps {
   onClose: () => void;
 }
 
-export default function DateModal({ data, onClose }: DateModalProps) {
-  if (!data) return null;
+const fetcher = (url: string) => API.get(url).then((r) => r.data as ModalData);
+
+export default function DateModal({ data: initialData, onClose }: DateModalProps) {
+  // Subscribe to the SWR cache so the checkbox state reflects the latest
+  // optimistic mutations. Without this, the modal renders from a frozen
+  // prop and every tap reads the same stale `completed` value, which led
+  // to the "-12 of 1" bug when the API was slow and the user double-tapped.
+  const { data } = useSWR<ModalData>(
+    initialData ? `/revision-date/${initialData.iso_date}` : null,
+    fetcher,
+    {
+      fallbackData: initialData ?? undefined,
+      revalidateOnMount: false,
+    },
+  );
+
+  if (!initialData || !data) return null;
 
   return (
     <div
