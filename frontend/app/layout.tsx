@@ -23,7 +23,11 @@ export const metadata: Metadata = {
 export function generateViewport() {
   return {
     themeColor: "#7c3aed",
-    viewport: "width=device-width, initial-scale=1, maximumScale=1",
+    // `viewport-fit=cover` lets the page draw under the iOS safe areas
+    // and makes `env(safe-area-inset-*)` return stable values during
+    // scroll. Without it, iOS Safari can produce a small wobble in
+    // bottom-fixed elements as the URL bar collapses.
+    viewport: "width=device-width, initial-scale=1, maximumScale=1, viewport-fit=cover",
   };
 }
 

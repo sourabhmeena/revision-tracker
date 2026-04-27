@@ -139,11 +139,12 @@ export default function Navigation() {
       </nav>
 
       {/* ── Mobile bottom bar ── */}
-      {/* `transform-gpu` (translateZ(0)) promotes the bar to its own
-          compositor layer so iOS Safari doesn't repaint it on every
-          URL-bar collapse/expand during scroll, which manifested as a
-          visible wobble against the list content. */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-bottom transform-gpu">
+      {/* No `transform: translateZ(0)` here on purpose — on iOS Safari,
+          combining `position: fixed` with a transform creates a new
+          containing block that detaches the element from the visual
+          viewport during URL-bar collapse, producing a small wobble.
+          The default fixed positioning is more stable on iOS. */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-bottom">
         <div className="flex items-center justify-around h-14">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
