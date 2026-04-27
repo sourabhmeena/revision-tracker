@@ -26,18 +26,21 @@ body {
 }
 
 @media (max-width: 767px) {
-  /* Reserve space for the fixed bottom nav. Must include the
-     safe-area-inset because the nav itself adds it via .safe-bottom,
-     so the nav's true occupied height is h-14 + inset. Without this,
-     the bottom ~34px of pages is hidden behind the nav on iPhones
-     with a home indicator. */
+  /* Reserve space for the fixed bottom nav. Must mirror .safe-bottom's
+     padding so the nav's true occupied height matches the body's
+     reserved space, otherwise content hides behind the nav. */
   body {
-    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+    padding-bottom: calc(3.5rem + max(env(safe-area-inset-bottom), 0.75rem));
   }
 }
 
+/* Floor the inset at 0.75rem so on Android (where Chrome often returns
+   env(safe-area-inset-bottom)=0 even with a visible gesture indicator)
+   the nav labels are never clipped under the system bar. iPhones with
+   a home indicator already report ~34px and remain unaffected by the
+   floor. */
 .safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }
 
 @keyframes marquee {
