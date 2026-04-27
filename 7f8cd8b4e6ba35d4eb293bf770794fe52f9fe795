@@ -1,0 +1,35 @@
+frontend/app/topics/[id]/page.tsx
+  efe2607fbb9b42bf 3,67-70,72-73,75,80-85,92-101
+frontend/hooks/useAPI.ts
+  efe2607fbb9b42bf 76-78,90-95
+frontend/components/CalendarGrid.tsx
+  efe2607fbb9b42bf 4,62-63
+frontend/components/UpcomingList.tsx
+  efe2607fbb9b42bf 5,48-50,57-65,71
+frontend/components/TopicChecklist.tsx
+  efe2607fbb9b42bf 3,19-23,25-26,36-37
+frontend/components/DateModal.tsx
+  efe2607fbb9b42bf 3,5,15-31
+frontend/components/TodayWidget.tsx
+  efe2607fbb9b42bf 3,10-12,14-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "7f8cd8b4e6ba35d4eb293bf770794fe52f9fe795",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 95,
+      "total_deletions": 23,
+      "accepted_lines": 95,
+      "overriden_lines": 0
+    }
+  }
+}
