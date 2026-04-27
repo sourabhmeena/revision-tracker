@@ -1,0 +1,23 @@
+frontend/app/globals.css
+  efe2607fbb9b42bf 29-31,33,37-41,43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "6f1c38a06416f41b3cdd941eee0cf0e8bef29375",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 10,
+      "total_deletions": 7,
+      "accepted_lines": 10,
+      "overriden_lines": 0
+    }
+  }
+}
