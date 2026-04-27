@@ -1,0 +1,25 @@
+frontend/hooks/useAPI.ts
+  efe2607fbb9b42bf 55-60,66-71,82-90,92-117,120-125
+frontend/public/sw.js
+  efe2607fbb9b42bf 1-7,16,20-21,26-31,33-35,37,39-41,43-47,49,53,57-58,64-65,68
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "8d747d6a4d1b3bcc09780fe6bce2254587bec612",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 88,
+      "total_deletions": 79,
+      "accepted_lines": 88,
+      "overriden_lines": 0
+    }
+  }
+}
