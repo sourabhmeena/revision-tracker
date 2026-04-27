@@ -135,6 +135,52 @@ def test_edge_cases():
     print("  Edge case tests passed")
 
 
+def test_today_in_progress_does_not_break_streak():
+    """Regression: an in-progress today must not zero out a real streak."""
+    print("\nTesting that today's in-progress state preserves streak...")
+
+    db = SessionLocal()
+    db.query(Revision).delete()
+    db.query(Topic).delete()
+    db.commit()
+
+    topic = Topic(
+        user_id=TEST_USER_ID,
+        title="In-Progress Today Topic",
+        created_at=date.today() - timedelta(days=10),
+    )
+    db.add(topic)
+    db.commit()
+    db.refresh(topic)
+
+    # Yesterday and the 4 days before are fully complete -> 5-day streak.
+    for i in range(1, 6):
+        rev_date = date.today() - timedelta(days=i)
+        db.add(Revision(topic_id=topic.id, revision_date=rev_date, completed=True))
+
+    # Today has a scheduled revision but it is NOT yet completed.
+    db.add(Revision(
+        topic_id=topic.id,
+        revision_date=date.today(),
+        completed=False,
+    ))
+
+    db.commit()
+
+    result = calculate_streaks(db, TEST_USER_ID)
+    print(f"  Current: {result['current_streak']}, Longest: {result['longest_streak']}")
+
+    assert result["current_streak"] == 5, (
+        f"Expected current_streak=5 (today in progress shouldn't reset), "
+        f"got {result['current_streak']}"
+    )
+    assert result["longest_streak"] == 5
+    assert len(result["streak_dates"]) == 5
+
+    db.close()
+    print("  In-progress-today test passed")
+
+
 def cleanup():
     """Clean up test data."""
     print("\nCleaning up...")
@@ -159,6 +205,7 @@ if __name__ == "__main__":
         test_streak_calculation()
         test_milestone_calculation()
         test_edge_cases()
+        test_today_in_progress_does_not_break_streak()
         cleanup()
 
         print("\n" + "=" * 60)

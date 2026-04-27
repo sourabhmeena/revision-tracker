@@ -86,7 +86,13 @@ def calculate_streaks(db: Session, user_id: str) -> dict:
         else:
             temp_streak = 0
 
-    # Calculate current streak: trailing completed from the most recent past day
+    # Calculate current streak: trailing completed from the most recent past day.
+    #
+    # Special case: today is allowed to be "in progress". An incomplete TODAY
+    # does not break the streak - it just doesn't extend it yet. Only an
+    # incomplete PAST day (yesterday or earlier) actually resets the streak.
+    # Without this, opening the app at 9 AM with revisions still un-ticked
+    # would show "Current Streak: 0" even after a 30-day run.
     current_streak = 0
     streak_dates = []
     for i in range(len(past_scheduled_days) - 1, -1, -1):
@@ -94,6 +100,9 @@ def calculate_streaks(db: Session, user_id: str) -> dict:
         if is_complete:
             current_streak += 1
             streak_dates.append(date_obj.isoformat())
+        elif date_obj == today:
+            # Today is in progress - don't count it, don't break the streak.
+            continue
         else:
             break
 
