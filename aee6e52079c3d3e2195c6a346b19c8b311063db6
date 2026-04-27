@@ -1,0 +1,25 @@
+backend/streak_calculator.py
+  efe2607fbb9b42bf 89-95,103-105
+backend/test_streaks.py
+  efe2607fbb9b42bf 138-183,208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.23",
+  "base_commit_sha": "aee6e52079c3d3e2195c6a346b19c8b311063db6",
+  "prompts": {
+    "efe2607fbb9b42bf": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "69031aa5-8a65-4d48-aca1-e9c8af81238a",
+        "model": "claude-opus-4-7-thinking-high"
+      },
+      "human_author": "sourabh.meena <sourabh.meena@1mg.com>",
+      "messages": [],
+      "total_additions": 57,
+      "total_deletions": 1,
+      "accepted_lines": 57,
+      "overriden_lines": 0
+    }
+  }
+}
