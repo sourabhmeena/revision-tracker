@@ -2,121 +2,81 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown } from "./icons";
 
 interface MonthYearPickerProps {
   currentDate: Date;
   onDateChange: (date: Date) => void;
 }
 
-export default function MonthYearPicker({
-  currentDate,
-  onDateChange,
-}: MonthYearPickerProps) {
-  const [isOpen, setIsOpen] = useState(false);
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+export default function MonthYearPicker({ currentDate, onDateChange }: MonthYearPickerProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth();
-
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
-  // Generate years (current year ± 5 years)
   const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
 
-  const handleMonthYearSelect = (month: number, year: number) => {
-    const newDate = new Date(year, month, 1);
-    onDateChange(newDate);
+  const select = (month: number, year: number) => {
+    onDateChange(new Date(year, month, 1));
     setIsOpen(false);
   };
 
   return (
     <div className="relative">
-      {/* Trigger Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="text-2xl font-semibold text-gray-800 dark:text-gray-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+        onClick={() => setIsOpen((v) => !v)}
+        className="inline-flex items-center gap-1 text-xl md:text-2xl font-extrabold tracking-tight text-text hover:text-primary transition-colors px-2 py-1 rounded-lg"
         title="Select month and year"
       >
-        {format(currentDate, "MMMM yyyy")} ▾
+        {format(currentDate, "MMMM yyyy")}
+        <ChevronDown className={`text-base text-muted transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
-      {/* Dropdown Modal */}
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          ></div>
-
-          {/* Picker Content */}
-          <div className="absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 p-4 w-80">
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                Year
-              </h3>
-              <div className="grid grid-cols-4 gap-2">
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.97 }}
+              transition={{ duration: 0.18 }}
+              className="absolute top-full mt-2 left-1/2 -translate-x-1/2 rs-card shadow-[var(--shadow-lg)] z-50 p-4 w-[19rem]"
+            >
+              <h4 className="rs-eyebrow mb-2">Year</h4>
+              <div className="grid grid-cols-4 gap-1.5 mb-4">
                 {years.map((year) => (
                   <button
                     key={year}
-                    onClick={() =>
-                      handleMonthYearSelect(currentMonth, year)
-                    }
-                    className={`
-                      px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                      ${
-                        year === currentYear
-                          ? "bg-violet-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
-                      }
-                    `}
+                    onClick={() => select(currentMonth, year)}
+                    className={`px-2 py-2 rounded-lg text-sm font-semibold rs-tabular transition-colors ${
+                      year === currentYear ? "text-on-primary bg-gradient-to-br from-indigo-500 to-violet-600" : "bg-surface-2 text-muted hover:text-text"
+                    }`}
                   >
                     {year}
                   </button>
                 ))}
               </div>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                Month
-              </h3>
-              <div className="grid grid-cols-3 gap-2">
-                {months.map((month, idx) => (
+              <h4 className="rs-eyebrow mb-2">Month</h4>
+              <div className="grid grid-cols-4 gap-1.5">
+                {MONTHS.map((month, idx) => (
                   <button
                     key={month}
-                    onClick={() =>
-                      handleMonthYearSelect(idx, currentYear)
-                    }
-                    className={`
-                      px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                      ${
-                        idx === currentMonth
-                          ? "bg-violet-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200"
-                      }
-                    `}
+                    onClick={() => select(idx, currentYear)}
+                    className={`px-2 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                      idx === currentMonth ? "text-on-primary bg-gradient-to-br from-indigo-500 to-violet-600" : "bg-surface-2 text-muted hover:text-text"
+                    }`}
                   >
-                    {month.substring(0, 3)}
+                    {month}
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-        </>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

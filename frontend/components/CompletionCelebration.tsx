@@ -2,150 +2,123 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { TrophyIcon, SparklesIcon } from "./icons";
 
 interface CompletionCelebrationProps {
   show: boolean;
   onClose: () => void;
 }
 
-export default function CompletionCelebration({
-  show,
-  onClose,
-}: CompletionCelebrationProps) {
-  const [confetti, setConfetti] = useState<Array<{ id: number; x: number; y: number; rotation: number; duration: number; color: string }>>([]);
+const CONFETTI_COLORS = ["#6366f1", "#8b5cf6", "#d946ef", "#f59e0b", "#10b981", "#22d3ee"];
+
+export default function CompletionCelebration({ show, onClose }: CompletionCelebrationProps) {
+  const [confetti, setConfetti] = useState<
+    Array<{ id: number; x: number; rotation: number; duration: number; delay: number; color: string; size: number }>
+  >([]);
 
   useEffect(() => {
-    if (show) {
-      // Generate confetti pieces with pre-computed random values
-      const colors = [
-        "#FF6B6B",
-        "#4ECDC4",
-        "#45B7D1",
-        "#FFA07A",
-        "#98D8C8",
-        "#F7DC6F",
-      ];
-      const pieces = Array.from({ length: 50 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: -10,
-        rotation: Math.random() * 360,
-        duration: 2 + Math.random() * 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      }));
-      setConfetti(pieces);
-
-      // Auto-close after 3 seconds
-      const timer = setTimeout(() => {
-        onClose();
-      }, 3000);
-
-      return () => clearTimeout(timer);
+    if (!show) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (!reduce) {
+      setConfetti(
+        Array.from({ length: 60 }, (_, i) => ({
+          id: i,
+          x: Math.random() * 100,
+          rotation: Math.random() * 360,
+          duration: 2.2 + Math.random() * 1.8,
+          delay: Math.random() * 0.4,
+          color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+          size: 7 + Math.random() * 7,
+        }))
+      );
     }
+    const timer = setTimeout(onClose, 3200);
+    return () => clearTimeout(timer);
   }, [show, onClose]);
 
   return (
     <AnimatePresence>
       {show && (
         <>
-          {/* Overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[100] grid place-items-center p-4"
+            style={{ background: "rgba(8,11,24,0.55)", backdropFilter: "blur(4px)" }}
             onClick={onClose}
           >
-            {/* Celebration Card */}
             <motion.div
-              initial={{ scale: 0, rotate: -180 }}
-              animate={{ scale: 1, rotate: 0 }}
-              exit={{ scale: 0, rotate: 180 }}
-              transition={{ type: "spring", duration: 0.6 }}
-              className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl w-full max-w-md text-center"
+              initial={{ scale: 0.7, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.8, y: 20, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 240, damping: 22 }}
+              className="rs-card w-full max-w-sm text-center p-7 shadow-[var(--shadow-lg)]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Trophy Animation */}
               <motion.div
-                className="text-8xl mb-4"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 10, -10, 0],
-                }}
-                transition={{
-                  duration: 0.5,
-                  repeat: Infinity,
-                  repeatDelay: 0.5,
-                }}
+                initial={{ scale: 0, rotate: -30 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.1 }}
+                className="mx-auto mb-5 grid place-items-center w-20 h-20 rounded-2xl text-white text-4xl bg-gradient-to-br from-amber-400 via-orange-500 to-rose-500 shadow-[var(--shadow-streak)]"
               >
-                🎉
+                <motion.span
+                  animate={{ rotate: [0, -8, 8, 0], scale: [1, 1.1, 1] }}
+                  transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 0.4 }}
+                  className="grid place-items-center"
+                >
+                  <TrophyIcon />
+                </motion.span>
               </motion.div>
 
-              {/* Success Message */}
               <motion.h2
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 16, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-3xl font-bold text-gray-800 mb-2"
+                className="text-2xl font-extrabold tracking-tight text-text mb-1"
               >
-                Amazing Work!
+                All done for today!
               </motion.h2>
-
               <motion.p
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 16, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-                className="text-gray-600 mb-6"
+                transition={{ delay: 0.28 }}
+                className="text-muted text-sm mb-6"
               >
-                You&apos;ve completed all revisions for today! 🚀
+                Every revision ticked off. Your memory thanks you.
               </motion.p>
 
-              {/* Stats */}
               <motion.div
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 16, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-4 text-white"
+                transition={{ delay: 0.36 }}
+                className="rounded-xl p-4 text-white bg-gradient-to-r from-emerald-500 to-teal-500"
               >
-                <div className="text-4xl font-bold mb-1">100%</div>
-                <div className="text-sm">Daily Goal Achieved!</div>
+                <div className="text-3xl font-extrabold rs-tabular">100%</div>
+                <div className="text-xs font-medium opacity-90">Daily goal achieved</div>
               </motion.div>
 
-              {/* Close Button */}
               <motion.button
-                initial={{ y: 20, opacity: 0 }}
+                initial={{ y: 16, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.44 }}
                 onClick={onClose}
-                className="mt-6 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors"
+                className="rs-btn rs-btn-primary w-full mt-5"
               >
-                Continue Learning! ✨
+                <SparklesIcon /> Keep the streak alive
               </motion.button>
             </motion.div>
           </motion.div>
 
-          {/* Confetti */}
-          <div className="fixed inset-0 pointer-events-none z-50">
-            {confetti.map((piece) => (
+          <div className="fixed inset-0 pointer-events-none z-[101] overflow-hidden">
+            {confetti.map((p) => (
               <motion.div
-                key={piece.id}
-                initial={{
-                  x: `${piece.x}vw`,
-                  y: "-10vh",
-                  rotate: piece.rotation,
-                }}
-                animate={{
-                  y: "110vh",
-                  rotate: piece.rotation + 720,
-                }}
-                transition={{
-                  duration: piece.duration,
-                  ease: "linear",
-                }}
-                className="absolute w-3 h-3 rounded-full"
-                style={{
-                  background: piece.color,
-                }}
+                key={p.id}
+                initial={{ x: `${p.x}vw`, y: "-10vh", rotate: p.rotation, opacity: 1 }}
+                animate={{ y: "110vh", rotate: p.rotation + 720, opacity: [1, 1, 0.9, 0] }}
+                transition={{ duration: p.duration, delay: p.delay, ease: "easeIn" }}
+                className="absolute rounded-sm"
+                style={{ width: p.size, height: p.size * 0.6, background: p.color }}
               />
             ))}
           </div>

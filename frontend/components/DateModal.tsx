@@ -1,11 +1,13 @@
 "use client";
 
 import useSWR from "swr";
-import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
 import ProgressBar from "./ProgressBar";
 import TopicChecklist from "./TopicChecklist";
+import ModalShell from "./ModalShell";
 import type { ModalData } from "../app/types";
+import { CalendarIcon } from "./icons";
 
 interface DateModalProps {
   data: ModalData | null;
@@ -15,59 +17,46 @@ interface DateModalProps {
 const fetcher = (url: string) => API.get(url).then((r) => r.data as ModalData);
 
 export default function DateModal({ data: initialData, onClose }: DateModalProps) {
-  // Subscribe to the SWR cache so the checkbox state reflects the latest
-  // optimistic mutations. Without this, the modal renders from a frozen
-  // prop and every tap reads the same stale `completed` value, which led
-  // to the "-12 of 1" bug when the API was slow and the user double-tapped.
+  // Subscribe to the SWR cache so checkbox state reflects the latest
+  // optimistic mutations (avoids the stale-prop double-tap counter bug).
   const { data } = useSWR<ModalData>(
     initialData ? `/revision-date/${initialData.iso_date}` : null,
     fetcher,
-    {
-      fallbackData: initialData ?? undefined,
-      revalidateOnMount: false,
-    },
+    { fallbackData: initialData ?? undefined, revalidateOnMount: false },
   );
 
-  if (!initialData || !data) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25 }}
-        className="bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl p-5 md:p-6 rounded-2xl shadow-xl w-full max-w-md"
-      >
-        <div className="text-2xl font-semibold dark:text-gray-100">{data.date || data.iso_date}</div>
-
-        {data.progress_percent !== undefined && (
-          <>
-            <div className="text-gray-700 dark:text-gray-300 text-sm mt-1">
-              {data.progress_percent}% of the year passed
+    <AnimatePresence>
+      {initialData && data && (
+        <ModalShell onClose={onClose} className="max-w-md p-5 md:p-6" labelledBy="date-title">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="rs-eyebrow flex items-center gap-1.5"><CalendarIcon className="text-sm" /> Revisions</p>
+              <h3 id="date-title" className="rs-title text-xl md:text-2xl mt-0.5 truncate">{data.date || data.iso_date}</h3>
             </div>
-            <ProgressBar percent={data.progress_percent} />
-          </>
-        )}
-
-        {data.topics && data.topics.length > 0 ? (
-          <TopicChecklist topics={data.topics} isoDate={data.iso_date} />
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400 text-center mt-6">
-            No revisions scheduled for this date.
+            {data.topics && data.topics.length > 0 && (
+              <span className="rs-chip rs-chip-muted shrink-0 rs-tabular">
+                {data.topics.filter((t) => t.completed).length}/{data.topics.length}
+              </span>
+            )}
           </div>
-        )}
 
-        <button
-          onClick={onClose}
-          className="mt-6 w-full bg-gray-900 dark:bg-gray-700 text-white rounded-xl py-2 hover:bg-black dark:hover:bg-gray-600"
-        >
-          Close
-        </button>
-      </motion.div>
-    </div>
+          {data.progress_percent !== undefined && (
+            <div className="mt-3">
+              <div className="text-xs text-muted mb-1.5">{data.progress_percent}% of the year elapsed</div>
+              <ProgressBar percent={data.progress_percent} />
+            </div>
+          )}
+
+          {data.topics && data.topics.length > 0 ? (
+            <TopicChecklist topics={data.topics} isoDate={data.iso_date} />
+          ) : (
+            <div className="text-muted text-center py-8 text-sm">No revisions scheduled for this date.</div>
+          )}
+
+          <button onClick={onClose} className="rs-btn rs-btn-outline w-full mt-5">Close</button>
+        </ModalShell>
+      )}
+    </AnimatePresence>
   );
 }

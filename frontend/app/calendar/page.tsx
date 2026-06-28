@@ -1,16 +1,25 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Navigation from "../../components/Navigation";
 import CalendarGrid from "../../components/CalendarGrid";
 import useAuth from "../useAuth";
+import { fadeUp } from "../../lib/motion";
+
+const LEGEND = [
+  { label: "Scheduled", cls: "border-violet-500/60 bg-violet-500/10" },
+  { label: "All done", cls: "border-emerald-500/60 bg-emerald-500/10" },
+  { label: "Overdue", cls: "border-rose-500/60 bg-rose-500/10" },
+  { label: "Today", cls: "border-violet-500 ring-2 ring-violet-500/40" },
+];
 
 export default function CalendarView() {
   const isLoggedIn = useAuth();
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
-        <div className="text-xl dark:text-gray-200">Loading...</div>
+      <div className="min-h-dvh grid place-items-center">
+        <div className="w-9 h-9 rounded-full border-2 border-border border-t-primary animate-spin" />
       </div>
     );
   }
@@ -18,54 +27,36 @@ export default function CalendarView() {
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-4 md:mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
-              Calendar View
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Visualize your revision schedule in a monthly calendar
-            </p>
+      <main className="rs-container py-6 md:py-8 max-w-5xl">
+        <motion.div variants={fadeUp} initial="hidden" animate="show" className="mb-5 md:mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div>
+            <p className="rs-eyebrow">Overview</p>
+            <h1 className="rs-title text-2xl md:text-3xl mt-1">Calendar</h1>
+            <p className="text-sm text-muted mt-1">Your revision schedule, month by month.</p>
           </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            {LEGEND.map((l) => (
+              <span key={l.label} className="inline-flex items-center gap-1.5 text-xs text-muted">
+                <span className={`w-3.5 h-3.5 rounded-md border ${l.cls}`} /> {l.label}
+              </span>
+            ))}
+          </div>
+        </motion.div>
 
-          <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-2 md:p-6 border border-gray-200 dark:border-gray-700">
-            <CalendarGrid />
-          </div>
+        <motion.div variants={fadeUp} initial="hidden" animate="show" className="rs-card p-2 md:p-5">
+          <CalendarGrid />
+        </motion.div>
 
-          <div className="mt-6 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-            <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-3 flex items-center gap-2">
-              Navigation Tips
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-blue-800 dark:text-blue-300">
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Click on <strong>month/year</strong> to jump to any month</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Use <strong>&larr; &rarr;</strong> buttons or arrow keys to switch months</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Click <strong>Today</strong> button to return to current month</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Dates with <strong>blue borders</strong> have scheduled revisions</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Today&apos;s date has a <strong>blue ring</strong> around it</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="text-blue-600 dark:text-blue-400 font-bold">&bull;</span>
-                <span>Click any date to view and manage topics</span>
-              </div>
-            </div>
+        <motion.div variants={fadeUp} initial="hidden" animate="show" className="mt-5 rs-card p-5">
+          <h3 className="rs-eyebrow mb-3">Tips</h3>
+          <div className="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-muted">
+            <p>• Tap <strong className="text-text">month/year</strong> to jump anywhere.</p>
+            <p>• Use <strong className="text-text">←/→</strong> or arrow keys to switch months.</p>
+            <p>• Tap <strong className="text-text">Today</strong> to return to this month.</p>
+            <p>• Tap any date to view and tick off its revisions.</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </main>
     </>
   );
 }

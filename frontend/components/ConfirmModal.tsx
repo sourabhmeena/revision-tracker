@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import ModalShell from "./ModalShell";
+import { TrashIcon, InfoIcon } from "./icons";
 
 interface ConfirmModalProps {
   title: string;
@@ -21,40 +22,31 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
-  const btnClass =
-    variant === "danger"
-      ? "bg-red-600 hover:bg-red-700 text-white"
-      : "bg-violet-600 hover:bg-violet-700 text-white";
-
+  const danger = variant === "danger";
   return (
-    <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      onClick={onCancel}
-    >
-      <motion.div
-        onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm p-6"
-      >
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">{title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">{message}</p>
-        <div className="flex gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors text-sm"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            onClick={onConfirm}
-            className={`px-4 py-2 font-medium rounded-lg transition-colors text-sm ${btnClass}`}
-          >
-            {confirmLabel}
-          </button>
+    <ModalShell onClose={onCancel} labelledBy="confirm-title">
+      <div className="flex items-start gap-3.5">
+        <span
+          className={`grid place-items-center w-11 h-11 rounded-2xl text-xl shrink-0 ${
+            danger ? "bg-rose-500/12 text-rose-600 dark:text-rose-400" : "bg-primary-soft text-primary"
+          }`}
+        >
+          {danger ? <TrashIcon /> : <InfoIcon />}
+        </span>
+        <div className="min-w-0">
+          <h3 id="confirm-title" className="rs-title text-lg">{title}</h3>
+          <p className="text-sm text-muted mt-1">{message}</p>
         </div>
-      </motion.div>
-    </div>
+      </div>
+      <div className="flex gap-3 justify-end mt-6">
+        <button onClick={onCancel} className="rs-btn rs-btn-outline">{cancelLabel}</button>
+        <button
+          onClick={onConfirm}
+          className={`rs-btn text-white ${danger ? "bg-rose-600 hover:bg-rose-700 shadow-[0_12px_28px_-8px_rgba(225,29,72,0.5)]" : "rs-btn-primary"}`}
+        >
+          {danger && <TrashIcon />} {confirmLabel}
+        </button>
+      </div>
+    </ModalShell>
   );
 }

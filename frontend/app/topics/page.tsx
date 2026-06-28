@@ -2,16 +2,43 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import Navigation from "../../components/Navigation";
 import TopicScheduleEditor from "../../components/TopicScheduleEditor";
 import ConfirmModal from "../../components/ConfirmModal";
 import InputModal from "../../components/InputModal";
+import CountUp from "../../components/CountUp";
+import ProgressBar from "../../components/ProgressBar";
 import { API } from "../api";
 import useAuth from "../useAuth";
 import { useTopics, refreshAll } from "../../hooks/useAPI";
 import type { TopicSummary } from "../types";
+import { chipStyle } from "../../lib/category";
+import { fadeUp, fadeUpSm, staggerContainer } from "../../lib/motion";
+import {
+  PlusIcon, SearchIcon, PencilIcon, ClockIcon, RefreshIcon, TrashIcon,
+  LayersIcon, CheckCircleIcon, SparklesIcon, BookIcon, CheckIcon, XIcon, InfoIcon,
+} from "../../components/icons";
 
 type SortKey = "newest" | "alphabetical" | "most_progress" | "least_progress";
+
+function CardAction({
+  onClick, label, tone, children,
+}: {
+  onClick: () => void; label: string; tone: string; children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      className={`inline-flex items-center gap-1.5 px-2.5 h-9 rounded-lg text-xs font-semibold transition-colors ${tone}`}
+    >
+      <span className="text-sm">{children}</span>
+      <span className="hidden sm:inline">{label}</span>
+    </button>
+  );
+}
 
 export default function TopicsPage() {
   const isLoggedIn = useAuth();
@@ -57,24 +84,13 @@ export default function TopicsPage() {
         (t.description && t.description.toLowerCase().includes(q))
       );
     }
-    if (filterCategory !== "all") {
-      result = result.filter((t) => t.category === filterCategory);
-    }
-    if (filterChapter !== "all") {
-      result = result.filter((t) => t.chapter === filterChapter);
-    }
+    if (filterCategory !== "all") result = result.filter((t) => t.category === filterCategory);
+    if (filterChapter !== "all") result = result.filter((t) => t.chapter === filterChapter);
     switch (sortBy) {
-      case "alphabetical":
-        result.sort((a, b) => a.title.localeCompare(b.title));
-        break;
-      case "most_progress":
-        result.sort((a, b) => b.progress_percent - a.progress_percent);
-        break;
-      case "least_progress":
-        result.sort((a, b) => a.progress_percent - b.progress_percent);
-        break;
-      default:
-        break;
+      case "alphabetical": result.sort((a, b) => a.title.localeCompare(b.title)); break;
+      case "most_progress": result.sort((a, b) => b.progress_percent - a.progress_percent); break;
+      case "least_progress": result.sort((a, b) => a.progress_percent - b.progress_percent); break;
+      default: break;
     }
     return result;
   }, [topics, search, sortBy, filterCategory, filterChapter]);
@@ -86,7 +102,6 @@ export default function TopicsPage() {
 
   const handleAddTopic = async () => {
     if (!newTopicTitle.trim()) return;
-
     try {
       await API.post("/topics", {
         title: newTopicTitle,
@@ -94,9 +109,7 @@ export default function TopicsPage() {
         chapter: newTopicChapter.trim() || null,
       });
       showToast("success", `"${newTopicTitle}" added!`);
-      setNewTopicTitle("");
-      setNewTopicCategory("");
-      setNewTopicChapter("");
+      setNewTopicTitle(""); setNewTopicCategory(""); setNewTopicChapter("");
       setShowAddForm(false);
       await refreshAll();
     } catch (err: unknown) {
@@ -107,7 +120,6 @@ export default function TopicsPage() {
 
   const handleUpdateTopic = async (id: string) => {
     if (!editTitle.trim()) return;
-
     try {
       await API.patch(`/topics/${id}`, {
         title: editTitle,
@@ -115,11 +127,7 @@ export default function TopicsPage() {
         chapter: editChapter.trim() || "",
         description: editDescription.trim() || "",
       });
-      setEditingId(null);
-      setEditTitle("");
-      setEditCategory("");
-      setEditChapter("");
-      setEditDescription("");
+      setEditingId(null); setEditTitle(""); setEditCategory(""); setEditChapter(""); setEditDescription("");
       await refreshAll();
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
@@ -133,9 +141,7 @@ export default function TopicsPage() {
       await API.delete(`/topics/${deleteTarget.id}`);
       await refreshAll();
       showToast("success", `"${deleteTarget.title}" deleted`);
-    } catch {
-      showToast("error", "Failed to delete topic");
-    }
+    } catch { showToast("error", "Failed to delete topic"); }
     setDeleteTarget(null);
   };
 
@@ -143,14 +149,11 @@ export default function TopicsPage() {
     if (!extendTarget) return;
     const n = Number(years);
     if (isNaN(n) || n <= 0) return;
-
     try {
       const res = await API.post(`/topics/${extendTarget.id}/extend-revisions?years=${n}`);
       showToast("success", `Added ${res.data.revisions_added} revisions for ${years} year(s)`);
       await refreshAll();
-    } catch {
-      showToast("error", "Failed to extend revisions");
-    }
+    } catch { showToast("error", "Failed to extend revisions"); }
     setExtendTarget(null);
   };
 
@@ -163,413 +166,257 @@ export default function TopicsPage() {
   };
 
   const cancelEdit = () => {
-    setEditingId(null);
-    setEditTitle("");
-    setEditCategory("");
-    setEditChapter("");
-    setEditDescription("");
+    setEditingId(null); setEditTitle(""); setEditCategory(""); setEditChapter(""); setEditDescription("");
   };
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-dvh grid place-items-center">
+        <div className="w-9 h-9 rounded-full border-2 border-border border-t-primary animate-spin" />
       </div>
     );
   }
 
+  const totalRevisions = topics.reduce((s, t) => s + t.total_revisions, 0);
+  const completedRevisions = topics.reduce((s, t) => s + t.completed_revisions, 0);
+
   return (
     <>
       <Navigation />
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 md:p-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-4 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-1 md:mb-2">
-                Manage Topics
-              </h1>
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
-                Add, edit, or delete your learning topics
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              className="px-5 py-2.5 md:px-6 md:py-3 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2 self-start md:self-auto"
-            >
-              <span className="text-xl">+</span>
-              <span>Add New Topic</span>
-            </button>
+      <main className="rs-container py-6 md:py-8">
+        {/* Header */}
+        <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+          <div>
+            <p className="rs-eyebrow">Library</p>
+            <h1 className="rs-title text-2xl md:text-3xl mt-1">Manage topics</h1>
+            <p className="text-sm text-muted mt-1">Add, edit, schedule, or remove your learning topics.</p>
           </div>
+          <button onClick={() => setShowAddForm((v) => !v)} className="rs-btn rs-btn-primary self-start sm:self-auto">
+            <PlusIcon /> Add new topic
+          </button>
+        </motion.div>
 
+        {/* Inline add form */}
+        <AnimatePresence>
           {showAddForm && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-md mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">
-                Add New Topic
-              </h3>
-              <div className="flex flex-col gap-2 sm:gap-3">
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                  <input
-                    type="text"
-                    value={newTopicTitle}
-                    onChange={(e) => setNewTopicTitle(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
-                    placeholder="Topic name..."
-                    className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                    autoFocus
-                  />
-                  <input
-                    type="text"
-                    value={newTopicCategory}
-                    onChange={(e) => setNewTopicCategory(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
-                    placeholder="Category (optional)"
-                    list="topics-category-suggestions"
-                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                  />
-                  <input
-                    type="text"
-                    value={newTopicChapter}
-                    onChange={(e) => setNewTopicChapter(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleAddTopic()}
-                    placeholder="Chapter (optional)"
-                    className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                  />
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddTopic}
-                    className="px-5 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                  >
-                    Add
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowAddForm(false);
-                      setNewTopicTitle("");
-                      setNewTopicCategory("");
-                      setNewTopicChapter("");
-                    }}
-                    className="px-5 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors"
-                  >
-                    Cancel
-                  </button>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mb-5"
+            >
+              <div className="rs-card p-5">
+                <h3 className="rs-title text-lg mb-3">New topic</h3>
+                <div className="flex flex-col gap-2.5">
+                  <div className="flex flex-col sm:flex-row gap-2.5">
+                    <input autoFocus value={newTopicTitle} onChange={(e) => setNewTopicTitle(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddTopic()} placeholder="Topic name…"
+                      className="rs-input min-w-0 flex-1" />
+                    <input value={newTopicCategory} onChange={(e) => setNewTopicCategory(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddTopic()} placeholder="Category (optional)"
+                      list="topics-category-suggestions" className="rs-input sm:w-44" />
+                    <input value={newTopicChapter} onChange={(e) => setNewTopicChapter(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleAddTopic()} placeholder="Chapter (optional)"
+                      className="rs-input sm:w-44" />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={handleAddTopic} className="rs-btn rs-btn-primary"><CheckIcon /> Add</button>
+                    <button onClick={() => { setShowAddForm(false); setNewTopicTitle(""); setNewTopicCategory(""); setNewTopicChapter(""); }}
+                      className="rs-btn rs-btn-outline"><XIcon /> Cancel</button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
+        </AnimatePresence>
 
-          {!loading && topics.length > 0 && (
-            <div className="mb-4 flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search topics..."
-                className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 bg-white dark:bg-gray-800"
-              />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm"
-              >
-                <option value="newest">Newest first</option>
-                <option value="alphabetical">A-Z</option>
-                <option value="most_progress">Most progress</option>
-                <option value="least_progress">Least progress</option>
+        {/* Toolbar */}
+        {!loading && topics.length > 0 && (
+          <motion.div variants={fadeUp} initial="hidden" animate="show" className="flex flex-col sm:flex-row gap-2.5 mb-5">
+            <div className="relative min-w-0 flex-1">
+              <SearchIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-faint text-lg pointer-events-none" />
+              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search topics…"
+                className="rs-input pl-11" />
+            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value as SortKey)} className="rs-input sm:w-auto cursor-pointer">
+              <option value="newest">Newest first</option>
+              <option value="alphabetical">A–Z</option>
+              <option value="most_progress">Most progress</option>
+              <option value="least_progress">Least progress</option>
+            </select>
+            {categories.length > 0 && (
+              <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)} className="rs-input sm:w-auto cursor-pointer">
+                <option value="all">All categories</option>
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
-              {categories.length > 0 && (
-                <select
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm"
-                >
-                  <option value="all">All categories</option>
-                  {categories.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              )}
-              {chapters.length > 0 && (
-                <select
-                  value={filterChapter}
-                  onChange={(e) => setFilterChapter(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 text-sm"
-                >
-                  <option value="all">All chapters</option>
-                  {chapters.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              )}
-            </div>
-          )}
+            )}
+            {chapters.length > 0 && (
+              <select value={filterChapter} onChange={(e) => setFilterChapter(e.target.value)} className="rs-input sm:w-auto cursor-pointer">
+                <option value="all">All chapters</option>
+                {chapters.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            )}
+          </motion.div>
+        )}
 
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Loading topics...</p>
-            </div>
-          ) : topics.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-12 text-center border border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                No topics yet
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                Add your first topic to start tracking revisions
-              </p>
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Add Your First Topic
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {filteredTopics.map((topic) => (
-                <div
-                  key={topic.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow"
-                >
-                  {editingId === topic.id ? (
-                    <div className="flex flex-col gap-2 sm:gap-3">
-                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                        <input
-                          type="text"
-                          value={editTitle}
-                          onChange={(e) => setEditTitle(e.target.value)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && handleUpdateTopic(topic.id)
-                          }
-                          placeholder="Topic name"
-                          className="min-w-0 flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                          autoFocus
-                        />
-                        <input
-                          type="text"
-                          value={editCategory}
-                          onChange={(e) => setEditCategory(e.target.value)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && handleUpdateTopic(topic.id)
-                          }
-                          placeholder="Category (optional)"
-                          list="topics-category-suggestions"
-                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                        />
-                        <input
-                          type="text"
-                          value={editChapter}
-                          onChange={(e) => setEditChapter(e.target.value)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && handleUpdateTopic(topic.id)
-                          }
-                          placeholder="Chapter (optional)"
-                          className="sm:w-40 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
-                        />
+        {/* Content */}
+        {loading ? (
+          <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            {[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="rs-skeleton h-56 rounded-[var(--radius-lg)]" />)}
+          </div>
+        ) : topics.length === 0 ? (
+          <div className="rs-card p-12 text-center">
+            <div className="grid place-items-center w-16 h-16 mx-auto rounded-2xl bg-primary-soft text-primary text-2xl mb-4"><BookIcon /></div>
+            <h3 className="rs-title text-xl mb-1">No topics yet</h3>
+            <p className="text-muted mb-6">Add your first topic to start tracking revisions.</p>
+            <button onClick={() => setShowAddForm(true)} className="rs-btn rs-btn-primary mx-auto"><PlusIcon /> Add your first topic</button>
+          </div>
+        ) : filteredTopics.length === 0 ? (
+          <div className="rs-card p-12 text-center text-muted">
+            <SearchIcon className="text-3xl mx-auto mb-3 text-faint" />
+            <p className="font-semibold text-text">No matches</p>
+            <p className="text-sm mt-1">Try a different search or filter.</p>
+          </div>
+        ) : (
+          <motion.div variants={staggerContainer} initial="hidden" animate="show" className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+            {filteredTopics.map((topic) => (
+              <motion.div key={topic.id} variants={fadeUpSm} layout className="rs-card rs-card-hover p-5 flex flex-col h-full">
+                {editingId === topic.id ? (
+                  <div className="flex flex-col gap-2.5">
+                    <input autoFocus value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleUpdateTopic(topic.id)} placeholder="Topic name" className="rs-input" />
+                    <input value={editCategory} onChange={(e) => setEditCategory(e.target.value)} placeholder="Category (optional)"
+                      list="topics-category-suggestions" className="rs-input" />
+                    <input value={editChapter} onChange={(e) => setEditChapter(e.target.value)} placeholder="Chapter (optional)" className="rs-input" />
+                    <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} placeholder="Notes (optional)" rows={3} className="rs-input resize-y" />
+                    <div className="flex gap-2">
+                      <button onClick={() => handleUpdateTopic(topic.id)} className="rs-btn rs-btn-primary flex-1"><CheckIcon /> Save</button>
+                      <button onClick={cancelEdit} className="rs-btn rs-btn-outline flex-1"><XIcon /> Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-start gap-2 mb-2">
+                      <Link href={`/topics/${topic.id}`} className="rs-title text-base md:text-lg leading-snug text-text hover:text-primary transition-colors flex-1 min-w-0">
+                        {topic.title}
+                      </Link>
+                      {topic.has_custom_schedule && (
+                        <span className="rs-chip rs-chip-muted shrink-0" title="Custom schedule"><ClockIcon className="text-xs" /> Custom</span>
+                      )}
+                    </div>
+
+                    {(topic.category || topic.chapter) && (
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {topic.category && <span className="rs-chip rs-chip-dynamic" style={chipStyle(topic.category)}>{topic.category}</span>}
+                        {topic.chapter && <span className="rs-chip rs-chip-muted">{topic.chapter}</span>}
                       </div>
-                      <textarea
-                        value={editDescription}
-                        onChange={(e) => setEditDescription(e.target.value)}
-                        placeholder="Notes (optional)"
-                        rows={3}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:border-violet-500 focus:ring-0 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-y"
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleUpdateTopic(topic.id)}
-                          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={cancelEdit}
-                          className="px-4 py-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors"
-                        >
-                          Cancel
-                        </button>
+                    )}
+
+                    {topic.description && <p className="text-xs text-muted line-clamp-2 mb-3">{topic.description}</p>}
+
+                    <div className="mt-auto">
+                      <div className="flex items-center justify-between text-xs text-muted mb-1.5">
+                        <span className="rs-tabular">{topic.completed_revisions}/{topic.total_revisions} revisions</span>
+                        <span className="font-bold text-text rs-tabular">{topic.progress_percent}%</span>
+                      </div>
+                      <ProgressBar percent={topic.progress_percent} />
+                      <div className="text-[11px] text-faint mt-2">
+                        Created {topic.created_at_formatted} · +{topic.intervals.join(", +")} then /{topic.repeat_interval}d
+                      </div>
+
+                      <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border">
+                        <CardAction onClick={() => startEdit(topic)} label="Edit" tone="bg-surface-2 text-muted hover:text-text"><PencilIcon /></CardAction>
+                        <CardAction onClick={() => setScheduleTopic(topic)} label="Schedule" tone="bg-primary-soft text-primary hover:opacity-80"><ClockIcon /></CardAction>
+                        <CardAction onClick={() => setExtendTarget(topic)} label="Extend" tone="bg-emerald-500/12 text-emerald-600 dark:text-emerald-400 hover:opacity-80"><RefreshIcon /></CardAction>
+                        <CardAction onClick={() => setDeleteTarget(topic)} label="Delete" tone="bg-rose-500/12 text-rose-600 dark:text-rose-400 hover:opacity-80"><TrashIcon /></CardAction>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div className="flex-grow min-w-0">
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1 md:mb-2">
-                          <Link href={`/topics/${topic.id}`} className="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-violet-600 dark:hover:text-violet-400 transition-colors">
-                            {topic.title}
-                          </Link>
-                          {(topic.category || topic.chapter) && (
-                            <div className="flex items-center gap-1.5">
-                              {topic.category && (
-                                <span className="text-xs bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
-                                  {topic.category}
-                                </span>
-                              )}
-                              {topic.chapter && (
-                                <span className="text-xs bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-medium whitespace-nowrap">
-                                  {topic.chapter}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                        {topic.description && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                            {topic.description}
-                          </p>
-                        )}
-                        <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600 dark:text-gray-400">
-                          <span>Created: {topic.created_at_formatted}</span>
-                          <span>
-                            {topic.completed_revisions} / {topic.total_revisions} revisions
-                          </span>
-                          {topic.has_custom_schedule && (
-                            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
-                              Custom schedule
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          Schedule: +{topic.intervals.join(", +")} then every {topic.repeat_interval}d
-                        </div>
+                  </>
+                )}
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
 
-                        <div className="mt-2 md:mt-3 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-rose-500 via-purple-500 to-blue-500 h-2 rounded-full transition-all"
-                            style={{ width: `${topic.progress_percent}%` }}
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                          {topic.progress_percent}% completed
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => startEdit(topic)}
-                          className="px-3 md:px-4 py-2 bg-blue-100 dark:bg-blue-900/40 hover:bg-blue-200 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors"
-                          title="Edit topic name"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => setScheduleTopic(topic)}
-                          className="px-3 md:px-4 py-2 bg-purple-100 dark:bg-purple-900/40 hover:bg-purple-200 dark:hover:bg-purple-900/60 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg transition-colors"
-                          title="Edit revision schedule"
-                        >
-                          Schedule
-                        </button>
-                        <button
-                          onClick={() => setExtendTarget(topic)}
-                          className="px-3 md:px-4 py-2 bg-green-100 dark:bg-green-900/40 hover:bg-green-200 dark:hover:bg-green-900/60 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg transition-colors"
-                          title="Extend revisions"
-                        >
-                          Extend
-                        </button>
-                        <button
-                          onClick={() => setDeleteTarget(topic)}
-                          className="px-3 md:px-4 py-2 bg-red-100 dark:bg-red-900/40 hover:bg-red-200 dark:hover:bg-red-900/60 text-red-700 dark:text-red-300 text-sm font-medium rounded-lg transition-colors"
-                          title="Delete topic"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {topics.length > 0 && (
-            <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
-              <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-200 mb-3 flex items-center gap-2">
-                Infinite Revision System
-              </h3>
-              <div className="text-sm text-blue-800 dark:text-blue-300 space-y-2">
-                <p>&bull; Each topic automatically generates revisions for <strong>5 years</strong> when created</p>
-                <p>&bull; Default: +1, +3, +7, +21, +30 days, then <strong>every 30 days indefinitely</strong></p>
-                <p>&bull; You can customise the intervals in <strong>Settings</strong></p>
-                <p>&bull; Need more? Click the <strong className="text-green-700">Extend</strong> button to add more years</p>
-              </div>
-            </div>
-          )}
-
-          {topics.length > 0 && (
-            <div className="mt-6 bg-gradient-to-r from-rose-500 via-purple-600 to-blue-600 rounded-xl p-6 text-white">
-              <h3 className="text-lg font-semibold mb-3">Summary</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <div className="text-3xl font-bold">{topics.length}</div>
-                  <div className="text-blue-100">Total Topics</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">
-                    {topics.reduce((sum, t) => sum + t.total_revisions, 0)}
+        {/* Summary + info */}
+        {topics.length > 0 && (
+          <div className="grid md:grid-cols-3 gap-4 mt-6">
+            <motion.div
+              variants={fadeUp} initial="hidden" animate="show"
+              className="md:col-span-2 relative overflow-hidden rounded-[var(--radius-xl)] p-6 text-white shadow-[var(--shadow-lg)]"
+              style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 55%, #c026d3 100%)" }}
+            >
+              <div className="pointer-events-none absolute -top-16 -right-10 w-56 h-56 rounded-full bg-white/15 blur-3xl" />
+              <h3 className="relative rs-eyebrow text-white/80 mb-4">Summary</h3>
+              <div className="relative grid grid-cols-3 gap-4">
+                {[
+                  { Icon: LayersIcon, value: topics.length, label: "Topics" },
+                  { Icon: SparklesIcon, value: totalRevisions, label: "Revisions" },
+                  { Icon: CheckCircleIcon, value: completedRevisions, label: "Completed" },
+                ].map(({ Icon, value, label }) => (
+                  <div key={label}>
+                    <Icon className="text-xl text-white/80 mb-1.5" />
+                    <div className="text-2xl md:text-3xl font-extrabold rs-tabular"><CountUp value={value} /></div>
+                    <div className="text-xs text-white/75">{label}</div>
                   </div>
-                  <div className="text-blue-100">Total Revisions</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold">
-                    {topics.reduce((sum, t) => sum + t.completed_revisions, 0)}
-                  </div>
-                  <div className="text-blue-100">Completed Revisions</div>
-                </div>
+                ))}
               </div>
-            </div>
-          )}
-        </div>
-      </div>
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" animate="show" className="rs-card p-5">
+              <h3 className="flex items-center gap-2 rs-title text-base mb-2"><InfoIcon className="text-primary" /> Infinite revisions</h3>
+              <ul className="text-xs text-muted space-y-1.5">
+                <li>• Each topic auto-generates <strong className="text-text">5 years</strong> of revisions.</li>
+                <li>• Default +1, +3, +7, +21, +30 then every 30 days.</li>
+                <li>• Customise intervals in <strong className="text-text">Settings</strong>.</li>
+                <li>• Use <strong className="text-emerald-600 dark:text-emerald-400">Extend</strong> to add more years.</li>
+              </ul>
+            </motion.div>
+          </div>
+        )}
+      </main>
 
       {scheduleTopic && (
         <TopicScheduleEditor
-          topicId={scheduleTopic.id}
-          topicTitle={scheduleTopic.title}
-          currentIntervals={scheduleTopic.intervals}
-          currentRepeat={scheduleTopic.repeat_interval}
+          topicId={scheduleTopic.id} topicTitle={scheduleTopic.title}
+          currentIntervals={scheduleTopic.intervals} currentRepeat={scheduleTopic.repeat_interval}
           hasCustom={scheduleTopic.has_custom_schedule}
-          onSaved={async () => {
-            setScheduleTopic(null);
-            await refreshAll();
-          }}
+          onSaved={async () => { setScheduleTopic(null); await refreshAll(); }}
           onClose={() => setScheduleTopic(null)}
         />
       )}
 
       {deleteTarget && (
         <ConfirmModal
-          title="Delete Topic"
+          title="Delete topic"
           message={`Are you sure you want to delete "${deleteTarget.title}"? This will also delete all associated revisions.`}
-          confirmLabel="Delete"
-          variant="danger"
-          onConfirm={confirmDelete}
-          onCancel={() => setDeleteTarget(null)}
+          confirmLabel="Delete" variant="danger"
+          onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)}
         />
       )}
 
       {extendTarget && (
         <InputModal
-          title="Extend Revisions"
+          title="Extend revisions"
           message={`How many additional years of revisions for "${extendTarget.title}"?`}
-          inputType="number"
-          defaultValue="1"
-          placeholder="Years"
-          submitLabel="Extend"
-          onSubmit={confirmExtend}
-          onCancel={() => setExtendTarget(null)}
+          inputType="number" defaultValue="1" placeholder="Years" submitLabel="Extend"
+          onSubmit={confirmExtend} onCancel={() => setExtendTarget(null)}
         />
       )}
 
-      {toast && (
-        <div className={`fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-sm font-medium ${
-          toast.type === "success" ? "bg-green-600 text-white" : "bg-red-600 text-white"
-        }`}>
-          {toast.msg}
-        </div>
-      )}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className={`fixed bottom-20 md:bottom-6 right-4 z-50 inline-flex items-center gap-2 px-4 py-3 rounded-xl shadow-[var(--shadow-lg)] text-sm font-semibold text-white ${
+              toast.type === "success" ? "bg-emerald-600" : "bg-rose-600"
+            }`}
+          >
+            {toast.type === "success" ? <CheckCircleIcon /> : <InfoIcon />} {toast.msg}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <datalist id="topics-category-suggestions">
-        {categories.map((c) => (
-          <option key={c} value={c} />
-        ))}
+        {categories.map((c) => <option key={c} value={c} />)}
       </datalist>
     </>
   );

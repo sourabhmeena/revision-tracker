@@ -12,55 +12,48 @@ export default function DayRing({
   overdue?: boolean;
 }) {
   const progress = total === 0 ? 0 : done / total;
+  const complete = progress >= 1;
 
   const ringColor = overdue
-    ? "#ef4444"
-    : progress === 1
-    ? "#22c55e"
+    ? "#f43f5e"
+    : complete
+    ? "#10b981"
     : progress > 0
     ? "#8b5cf6"
-    : "#d1d5db";
+    : "transparent";
+
+  const Ring = ({ size, r, sw }: { size: number; r: number; sw: number }) => {
+    const c = 2 * Math.PI * r;
+    return (
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={sw} fill="none" style={{ stroke: "var(--border-strong)" }} />
+        {progress > 0 && (
+          <motion.circle
+            cx={size / 2} cy={size / 2} r={r} stroke={ringColor} strokeWidth={sw} fill="none"
+            strokeLinecap="round" strokeDasharray={c}
+            initial={{ strokeDashoffset: c }} animate={{ strokeDashoffset: c - progress * c }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          />
+        )}
+      </svg>
+    );
+  };
+
+  const label = (
+    <span className={`absolute font-bold ${overdue ? "text-rose-500" : complete ? "text-emerald-500" : "text-text"}`}>
+      {complete ? "✓" : day}
+    </span>
+  );
 
   return (
     <>
-      {/* Mobile: compact version */}
-      <div className="md:hidden relative flex items-center justify-center">
-        <svg width={24} height={24}>
-          <circle cx={12} cy={12} r={9} stroke="#e5e7eb" strokeWidth={3} fill="none" />
-          <motion.circle
-            cx={12} cy={12} r={9}
-            stroke={ringColor} strokeWidth={3} fill="none"
-            strokeDasharray={2 * Math.PI * 9}
-            strokeDashoffset={2 * Math.PI * 9 - progress * 2 * Math.PI * 9}
-            strokeLinecap="round"
-            initial={{ strokeDashoffset: 2 * Math.PI * 9 }}
-            animate={{ strokeDashoffset: 2 * Math.PI * 9 - progress * 2 * Math.PI * 9 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
-        </svg>
-        <div className={`absolute text-[10px] font-semibold ${overdue ? "text-red-600" : ""}`}>
-          {progress === 1 ? "✓" : day}
-        </div>
+      <div className="md:hidden relative grid place-items-center text-[11px]">
+        <Ring size={26} r={10} sw={3} />
+        {label}
       </div>
-
-      {/* Desktop: full version */}
-      <div className="hidden md:flex relative items-center justify-center">
-        <svg width={38} height={38}>
-          <circle cx={19} cy={19} r={17} stroke="#e5e7eb" strokeWidth={4} fill="none" />
-          <motion.circle
-            cx={19} cy={19} r={17}
-            stroke={ringColor} strokeWidth={4} fill="none"
-            strokeDasharray={2 * Math.PI * 17}
-            strokeDashoffset={2 * Math.PI * 17 - progress * 2 * Math.PI * 17}
-            strokeLinecap="round"
-            initial={{ strokeDashoffset: 2 * Math.PI * 17 }}
-            animate={{ strokeDashoffset: 2 * Math.PI * 17 - progress * 2 * Math.PI * 17 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-          />
-        </svg>
-        <div className={`absolute text-sm font-semibold ${overdue ? "text-red-600" : ""}`}>
-          {progress === 1 ? "✓" : day}
-        </div>
+      <div className="hidden md:grid relative place-items-center text-sm">
+        <Ring size={40} r={17} sw={4} />
+        {label}
       </div>
     </>
   );

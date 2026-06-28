@@ -2,46 +2,431 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ============================================================
+   Recall Smart — "Aurora" Design System
+   Semantic tokens (light + dark), elevation, radius, motion.
+   ============================================================ */
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-streak: var(--streak);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-jakarta), Inter, system-ui, -apple-system, sans-serif;
+
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --bg: #f5f6fc;
+  --surface: #ffffff;
+  --surface-2: #f3f4fb;
+  --border: #e7e8f3;
+  --border-strong: #d6d8ec;
+  /* Text — all meet >=4.5:1 on surface */
+  --text: #15182a;
+  --muted: #565d77;
+  --faint: #858bA3;
+  /* Brand */
+  --primary: #6d28d9;
+  --primary-strong: #5b21b6;
+  --primary-soft: #efeafe;
+  --on-primary: #ffffff;
+  /* Semantic accents */
+  --accent: #059669;          /* done / success */
+  --accent-soft: #d6f5e6;
+  --streak: #f59e0b;          /* streak / fire */
+  --warn: #d97706;
+  --danger: #e11d48;
+  --danger-soft: #ffe4ea;
+  --ring: #8b5cf6;
+  /* Signature gradient stops */
+  --grad-1: #6366f1;          /* indigo  */
+  --grad-2: #8b5cf6;          /* violet  */
+  --grad-3: #d946ef;          /* fuchsia */
+  /* Aurora wash (very subtle) */
+  --aurora-1: rgba(124, 58, 237, 0.18);
+  --aurora-2: rgba(99, 102, 241, 0.16);
+  --aurora-3: rgba(217, 70, 239, 0.12);
+  /* Elevation */
+  --shadow-xs: 0 1px 2px rgba(20, 24, 50, 0.05);
+  --shadow-sm: 0 2px 8px -2px rgba(20, 24, 50, 0.08), 0 1px 2px rgba(20, 24, 50, 0.04);
+  --shadow-md: 0 10px 28px -8px rgba(30, 27, 75, 0.14), 0 2px 6px -2px rgba(30, 27, 75, 0.07);
+  --shadow-lg: 0 24px 60px -16px rgba(30, 27, 75, 0.22), 0 8px 20px -10px rgba(30, 27, 75, 0.12);
+  --shadow-primary: 0 12px 28px -8px rgba(109, 40, 217, 0.45);
+  --shadow-streak: 0 12px 28px -8px rgba(234, 88, 12, 0.4);
+  /* Floating-glass surfaces */
+  --glass-bg: rgba(255, 255, 255, 0.66);
+  --glass-brd: rgba(255, 255, 255, 0.75);
+  --glass-hi: rgba(255, 255, 255, 0.8);
+  --shadow-float: 0 18px 40px -16px rgba(30, 27, 75, 0.28), 0 6px 16px -8px rgba(30, 27, 75, 0.12);
+  --shadow-float-lg: 0 34px 70px -22px rgba(30, 27, 75, 0.34), 0 12px 28px -12px rgba(30, 27, 75, 0.18);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --bg: #080b18;
+  --surface: #121728;
+  --surface-2: #1a2034;
+  --border: #262d45;
+  --border-strong: #333c5a;
+  --text: #eef1fb;
+  --muted: #a6adC6;
+  --faint: #757d99;
+  --primary: #8b5cf6;
+  --primary-strong: #7c3aed;
+  --primary-soft: #251a45;
+  --on-primary: #ffffff;
+  --accent: #34d399;
+  --accent-soft: #0c2f2b;
+  --streak: #fbbf24;
+  --warn: #fbbf24;
+  --danger: #fb7185;
+  --danger-soft: #3a1622;
+  --ring: #a78bfa;
+  --grad-1: #818cf8;
+  --grad-2: #a78bfa;
+  --grad-3: #e879f9;
+  --aurora-1: rgba(139, 92, 246, 0.22);
+  --aurora-2: rgba(79, 70, 229, 0.2);
+  --aurora-3: rgba(217, 70, 239, 0.14);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 10px -2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 14px 36px -12px rgba(0, 0, 0, 0.6), 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 30px 70px -20px rgba(0, 0, 0, 0.7), 0 10px 24px -12px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 14px 34px -10px rgba(139, 92, 246, 0.55);
+  --shadow-streak: 0 14px 34px -10px rgba(251, 146, 60, 0.4);
+  --glass-bg: rgba(18, 23, 40, 0.58);
+  --glass-brd: rgba(255, 255, 255, 0.1);
+  --glass-hi: rgba(255, 255, 255, 0.08);
+  --shadow-float: 0 22px 48px -18px rgba(0, 0, 0, 0.66), 0 6px 16px -8px rgba(0, 0, 0, 0.45);
+  --shadow-float-lg: 0 40px 80px -24px rgba(0, 0, 0, 0.75), 0 14px 30px -12px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------------- Base ---------------- */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-inter), Inter, system-ui, -apple-system, sans-serif;
-  letter-spacing: -0.01em;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100dvh;
 }
 
+/* Aurora wash — a soft, fixed gradient field behind everything.
+   Cheap (no animation, no blur layers) and adds depth without noise. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 40rem at 12% -8%, var(--aurora-2), transparent 60%),
+    radial-gradient(52rem 38rem at 92% 4%, var(--aurora-1), transparent 58%),
+    radial-gradient(48rem 36rem at 50% 116%, var(--aurora-3), transparent 60%);
+}
+
+/* Floating gradient orbs — give the frosted-glass surfaces something
+   to refract, and add slow 3D-ish depth behind everything. */
+.bg-orbs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-orbs span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.dark .bg-orbs span { opacity: 0.42; }
+.bg-orbs .orb-1 {
+  width: 34rem; height: 34rem; top: -10rem; left: -8rem;
+  background: radial-gradient(circle at 30% 30%, var(--grad-1), transparent 68%);
+  animation: rs-drift-a 22s ease-in-out infinite;
+}
+.bg-orbs .orb-2 {
+  width: 30rem; height: 30rem; top: 18%; right: -10rem;
+  background: radial-gradient(circle at 70% 30%, var(--grad-3), transparent 68%);
+  animation: rs-drift-b 26s ease-in-out infinite;
+}
+.bg-orbs .orb-3 {
+  width: 32rem; height: 32rem; bottom: -12rem; left: 28%;
+  background: radial-gradient(circle at 50% 50%, var(--grad-2), transparent 70%);
+  animation: rs-drift-c 30s ease-in-out infinite;
+}
+
+@keyframes rs-drift-a {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(3rem, 2rem, 0) scale(1.08); }
+}
+@keyframes rs-drift-b {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-2.5rem, 3rem, 0) scale(1.1); }
+}
+@keyframes rs-drift-c {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(2rem, -2.5rem, 0) scale(1.06); }
+}
+
+/* App content sits above the aurora + orbs */
+#app-root {
+  position: relative;
+  z-index: 1;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--primary) 28%, transparent);
+}
+
+/* Refined focus ring for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Slim, themed scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+/* Reserve space for the fixed bottom nav on small screens. Mirrors
+   .safe-bottom's padding so content never hides behind the nav. */
 @media (max-width: 767px) {
-  /* Reserve space for the fixed bottom nav. Must mirror .safe-bottom's
-     padding so the nav's true occupied height matches the body's
-     reserved space, otherwise content hides behind the nav. */
   body {
-    padding-bottom: calc(3.5rem + max(env(safe-area-inset-bottom), 0.75rem));
+    padding-bottom: calc(4.25rem + max(env(safe-area-inset-bottom), 0.75rem));
   }
 }
 
-/* Floor the inset at 0.75rem so on Android (where Chrome often returns
-   env(safe-area-inset-bottom)=0 even with a visible gesture indicator)
-   the nav labels are never clipped under the system bar. iPhones with
-   a home indicator already report ~34px and remain unaffected by the
-   floor. */
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
 }
+.safe-top {
+  padding-top: max(env(safe-area-inset-top), 0px);
+}
+
+/* ---------------- Component layer ---------------- */
+
+@layer components {
+  /* Page container — adaptive gutters + width per device class */
+  .rs-container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    max-width: 72rem;
+  }
+  @media (min-width: 768px) {
+    .rs-container { padding-inline: 2rem; }
+  }
+
+  /* Frosted-glass card surface — translucent, blurred, floating. */
+  .rs-card {
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    border: 1px solid var(--glass-brd);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-float), inset 0 1px 0 var(--glass-hi);
+  }
+  .rs-card-hover {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .rs-card-hover:hover {
+    transform: translateY(-5px) scale(1.006);
+    box-shadow: var(--shadow-float-lg), inset 0 1px 0 var(--glass-hi);
+    border-color: var(--glass-brd);
+  }
+  /* Opt-out: a fully opaque surface (e.g. when blur would hurt readability) */
+  .rs-card-solid {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* Glass surface for sticky chrome (nav) */
+  .rs-glass {
+    background: color-mix(in oklab, var(--surface) 78%, transparent);
+    -webkit-backdrop-filter: saturate(1.5) blur(14px);
+    backdrop-filter: saturate(1.5) blur(14px);
+    border-color: var(--border);
+  }
+
+  /* Eyebrow label */
+  .rs-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+
+  /* Buttons */
+  .rs-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1.15rem;
+    min-height: 2.75rem;
+    cursor: pointer;
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+    user-select: none;
+  }
+  .rs-btn:active { transform: scale(0.96); }
+  .rs-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+  .rs-btn-primary {
+    color: var(--on-primary);
+    background-image: linear-gradient(135deg, var(--grad-1), var(--grad-2) 55%, var(--grad-3));
+    box-shadow: var(--shadow-primary);
+  }
+  .rs-btn-primary:hover { box-shadow: 0 16px 34px -10px rgba(109, 40, 217, 0.55); }
+
+  .rs-btn-soft {
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .rs-btn-soft:hover { background: color-mix(in oklab, var(--primary-soft) 80%, var(--primary) 8%); }
+
+  .rs-btn-ghost {
+    color: var(--muted);
+    background: transparent;
+  }
+  .rs-btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+
+  .rs-btn-outline {
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+  }
+  .rs-btn-outline:hover { background: var(--surface-2); }
+
+  /* Inputs */
+  .rs-input {
+    width: 100%;
+    background: var(--surface);
+    color: var(--text);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem;
+    min-height: 2.875rem;
+    font-size: 1rem;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+  .rs-input::placeholder { color: var(--faint); }
+  .rs-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--primary) 18%, transparent);
+  }
+  .dark .rs-input { background: var(--surface-2); }
+
+  /* Chips / tags */
+  .rs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0.28rem 0.55rem;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  /* Category chip — colour comes from chipStyle() CSS vars, per theme. */
+  .rs-chip-dynamic {
+    background: var(--chip-bg);
+    color: var(--chip-fg);
+  }
+  .dark .rs-chip-dynamic {
+    background: var(--chip-bg-dark);
+    color: var(--chip-fg-dark);
+  }
+  .rs-chip-muted {
+    background: var(--surface-2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  /* Segmented control */
+  .rs-segment {
+    display: inline-flex;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.25rem;
+    gap: 0.15rem;
+  }
+
+  /* Section title */
+  .rs-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  /* Gradient text */
+  .rs-gradient-text {
+    background-image: linear-gradient(120deg, var(--grad-1), var(--grad-2) 50%, var(--grad-3));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Tabular numerals for counts/streaks/timers */
+  .rs-tabular { font-variant-numeric: tabular-nums; }
+}
+
+/* ---------------- Animations ---------------- */
 
 @keyframes marquee {
   0%   { transform: translateX(0%); }
@@ -50,4 +435,54 @@ body {
 .animate-marquee {
   display: inline-flex;
   animation: marquee 6s linear infinite;
+}
+
+@keyframes rs-shimmer {
+  100% { transform: translateX(100%); }
+}
+.rs-skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+.rs-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent,
+    color-mix(in oklab, var(--text) 7%, transparent), transparent);
+  animation: rs-shimmer 1.5s infinite;
+}
+
+@keyframes rs-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes rs-flicker {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+  50%      { transform: scale(1.06) translateY(-1px); opacity: 0.92; }
+}
+.rs-flame { animation: rs-flicker 1.6s ease-in-out infinite; transform-origin: bottom center; }
+
+@keyframes rs-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.rs-pop { animation: rs-pop 0.32s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ---------------- Reduced motion ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .rs-flame, .animate-marquee { animation: none !important; }
 }

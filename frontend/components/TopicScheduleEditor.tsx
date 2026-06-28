@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API } from "../app/api";
+import ModalShell from "./ModalShell";
+import { PlusIcon, MinusIcon, XIcon, CheckIcon, InfoIcon } from "./icons";
 
 interface TopicScheduleEditorProps {
   topicId: string;
@@ -14,37 +16,43 @@ interface TopicScheduleEditorProps {
   onClose: () => void;
 }
 
+function MiniStepper({ value, onDec, onInc, onChange, minReached }: {
+  value: number; onDec: () => void; onInc: () => void; onChange: (v: number) => void; minReached: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <button onClick={onDec} disabled={minReached} aria-label="Decrease"
+        className="grid place-items-center w-8 h-8 rounded-lg bg-surface-2 text-text hover:bg-border disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+        <MinusIcon className="text-sm" />
+      </button>
+      <input type="number" min={1} value={value} onChange={(e) => onChange(parseInt(e.target.value) || 1)}
+        className="rs-input w-14 text-center font-bold px-1 py-1.5 min-h-0 h-9" />
+      <button onClick={onInc} aria-label="Increase"
+        className="grid place-items-center w-8 h-8 rounded-lg bg-surface-2 text-text hover:bg-border transition-colors">
+        <PlusIcon className="text-sm" />
+      </button>
+    </div>
+  );
+}
+
 export default function TopicScheduleEditor({
-  topicId,
-  topicTitle,
-  currentIntervals,
-  currentRepeat,
-  hasCustom,
-  onSaved,
-  onClose,
+  topicId, topicTitle, currentIntervals, currentRepeat, hasCustom, onSaved, onClose,
 }: TopicScheduleEditorProps) {
   const [intervals, setIntervals] = useState<number[]>(currentIntervals);
   const [repeatInterval, setRepeatInterval] = useState(currentRepeat);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const updateInterval = (index: number, value: number) => {
+  const updateInterval = (index: number, value: number) =>
     setIntervals((prev) => prev.map((v, i) => (i === index ? Math.max(1, value) : v)));
-  };
-
-  const addInterval = () => {
-    const last = intervals[intervals.length - 1] || 7;
-    setIntervals((prev) => [...prev, last]);
-  };
-
+  const addInterval = () => setIntervals((prev) => [...prev, prev[prev.length - 1] || 7]);
   const removeInterval = (index: number) => {
     if (intervals.length <= 1) return;
     setIntervals((prev) => prev.filter((_, i) => i !== index));
   };
 
   const cumulativeDays = intervals.reduce<number[]>((acc, gap) => {
-    const prev = acc.length > 0 ? acc[acc.length - 1] : 0;
-    acc.push(prev + gap);
+    acc.push((acc[acc.length - 1] ?? 0) + gap);
     return acc;
   }, []);
 
@@ -53,13 +61,9 @@ export default function TopicScheduleEditor({
       setError("All values must be at least 1 day");
       return;
     }
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     try {
-      await API.patch(`/topics/${topicId}/schedule`, {
-        intervals,
-        repeat_interval: repeatInterval,
-      });
+      await API.patch(`/topics/${topicId}/schedule`, { intervals, repeat_interval: repeatInterval });
       onSaved();
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { detail?: string } } };
@@ -69,186 +73,88 @@ export default function TopicScheduleEditor({
   };
 
   const handleReset = async () => {
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     try {
       const res = await API.post(`/topics/${topicId}/schedule/reset`);
       setIntervals(res.data.intervals);
       setRepeatInterval(res.data.repeat_interval);
       onSaved();
-    } catch {
-      setError("Failed to reset schedule");
-    }
+    } catch { setError("Failed to reset schedule"); }
     setSaving(false);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <motion.div
-        onClick={(e) => e.stopPropagation()}
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-      >
-        {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 rounded-t-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">Edit Schedule</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{topicTitle}</p>
-            </div>
-            {hasCustom && (
-              <span className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-medium">
-                Custom
-              </span>
-            )}
-          </div>
+    <ModalShell onClose={onClose} className="max-w-lg max-h-[88vh] flex flex-col p-0" labelledBy="sched-title">
+      {/* Header */}
+      <div className="shrink-0 border-b border-border px-5 md:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id="sched-title" className="rs-title text-lg">Edit schedule</h2>
+          <p className="text-sm text-muted truncate">{topicTitle}</p>
         </div>
+        {hasCustom && <span className="rs-chip bg-primary-soft text-primary shrink-0">Custom</span>}
+      </div>
 
-        <div className="px-6 py-5 space-y-5">
-          {/* Intervals */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Review Intervals (days between reviews)</h3>
-            <div className="space-y-2">
-              <AnimatePresence>
-                {intervals.map((value, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center gap-2"
-                  >
-                    <div className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0">
-                      {index + 1}
-                    </div>
-                    <button
-                      onClick={() => updateInterval(index, value - 1)}
-                      disabled={value <= 1}
-                      className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
-                    >
-                      &minus;
-                    </button>
-                    <input
-                      type="number"
-                      min={1}
-                      value={value}
-                      onChange={(e) => updateInterval(index, parseInt(e.target.value) || 1)}
-                      className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-violet-500 focus:ring-0 outline-none"
-                    />
-                    <button
-                      onClick={() => updateInterval(index, value + 1)}
-                      className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors text-sm"
-                    >
-                      +
-                    </button>
-                    <span className="text-xs text-gray-400">Day {cumulativeDays[index]}</span>
-                    <div className="flex-grow" />
-                    <button
-                      onClick={() => removeInterval(index)}
-                      disabled={intervals.length <= 1}
-                      className="w-7 h-7 rounded-lg bg-red-50 hover:bg-red-100 text-red-400 text-sm font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
-                    >
-                      &times;
-                    </button>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              <button
-                onClick={addInterval}
-                className="w-full py-1.5 border-2 border-dashed border-gray-300 rounded-lg text-gray-400 hover:border-violet-400 hover:text-violet-600 transition-colors text-sm font-medium"
-              >
-                + Add interval
-              </button>
-            </div>
-          </div>
-
-          {/* Repeat */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">Then repeat every</h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setRepeatInterval((v) => Math.max(1, v - 1))}
-                disabled={repeatInterval <= 1}
-                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors disabled:opacity-30 disabled:cursor-not-allowed text-sm"
-              >
-                &minus;
-              </button>
-              <input
-                type="number"
-                min={1}
-                value={repeatInterval}
-                onChange={(e) => setRepeatInterval(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-16 text-center px-2 py-1.5 border border-gray-300 rounded-lg text-gray-900 font-semibold text-sm focus:border-violet-500 focus:ring-0 outline-none"
-              />
-              <button
-                onClick={() => setRepeatInterval((v) => v + 1)}
-                className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold transition-colors text-sm"
-              >
-                +
-              </button>
-              <span className="text-sm text-gray-500">days</span>
-            </div>
-          </div>
-
-          {/* Preview */}
-          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Preview</h4>
-            <div className="flex flex-wrap gap-1.5">
-              {cumulativeDays.map((day, i) => (
-                <span key={i} className="px-2 py-1 bg-blue-50 border border-blue-200 rounded text-xs font-medium text-blue-800">
-                  Day {day}
-                </span>
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-5 md:px-6 py-5 space-y-5">
+        <div>
+          <h3 className="rs-eyebrow mb-3">Review intervals (gap in days)</h3>
+          <div className="space-y-2">
+            <AnimatePresence>
+              {intervals.map((value, index) => (
+                <motion.div key={index} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="flex items-center gap-2">
+                  <span className="grid place-items-center w-7 h-7 rounded-full bg-primary-soft text-primary text-xs font-bold shrink-0 rs-tabular">{index + 1}</span>
+                  <MiniStepper value={value} minReached={value <= 1}
+                    onDec={() => updateInterval(index, value - 1)} onInc={() => updateInterval(index, value + 1)} onChange={(v) => updateInterval(index, v)} />
+                  <span className="text-xs text-faint">Day {cumulativeDays[index]}</span>
+                  <button onClick={() => removeInterval(index)} disabled={intervals.length <= 1} aria-label="Remove"
+                    className="ml-auto grid place-items-center w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500/15 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0">
+                    <XIcon className="text-sm" />
+                  </button>
+                </motion.div>
               ))}
-              <span className="px-2 py-1 bg-purple-50 border border-purple-200 rounded text-xs font-medium text-purple-800">
-                +{repeatInterval}d forever
-              </span>
-            </div>
-          </div>
-
-          {/* Warning */}
-          <div className="bg-yellow-50 rounded-lg p-3 border border-yellow-200">
-            <p className="text-xs text-yellow-800">
-              <strong>Note:</strong> Completed revisions are kept. Only uncompleted future revisions will be
-              regenerated with the new schedule.
-            </p>
-          </div>
-
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 md:px-6 py-4 rounded-b-2xl flex flex-wrap items-center gap-2 md:gap-3">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-4 md:px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
-          >
-            {saving ? "Saving..." : "Save & Reschedule"}
-          </button>
-          {hasCustom && (
-            <button
-              onClick={handleReset}
-              disabled={saving}
-              className="px-4 md:px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors disabled:opacity-50 text-sm"
-            >
-              Reset to Default
+            </AnimatePresence>
+            <button onClick={addInterval} className="w-full py-2 border-2 border-dashed border-border-strong rounded-xl text-muted hover:border-primary hover:text-primary transition-colors text-sm font-semibold inline-flex items-center justify-center gap-1.5">
+              <PlusIcon className="text-sm" /> Add interval
             </button>
-          )}
-          <div className="flex-grow" />
-          <button
-            onClick={onClose}
-            className="px-4 md:px-5 py-2.5 text-gray-500 hover:text-gray-700 font-medium rounded-lg transition-colors text-sm"
-          >
-            Cancel
-          </button>
+          </div>
         </div>
-      </motion.div>
-    </div>
+
+        <div>
+          <h3 className="rs-eyebrow mb-2">Then repeat every</h3>
+          <div className="flex items-center gap-2">
+            <MiniStepper value={repeatInterval} minReached={repeatInterval <= 1}
+              onDec={() => setRepeatInterval((v) => Math.max(1, v - 1))} onInc={() => setRepeatInterval((v) => v + 1)} onChange={(v) => setRepeatInterval(Math.max(1, v))} />
+            <span className="text-sm text-muted">days, forever</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl bg-surface-2/60 p-4 border border-border">
+          <h4 className="rs-eyebrow mb-2">Preview</h4>
+          <div className="flex flex-wrap gap-1.5">
+            {cumulativeDays.map((day, i) => <span key={i} className="rs-chip rs-chip-muted">Day {day}</span>)}
+            <span className="rs-chip bg-primary-soft text-primary">+{repeatInterval}d forever</span>
+          </div>
+        </div>
+
+        <div className="rounded-xl p-3 border-l-4 border-l-amber-400 bg-amber-400/5">
+          <p className="text-xs text-muted"><strong className="text-text">Note:</strong> Completed revisions are kept. Only uncompleted future revisions are regenerated.</p>
+        </div>
+
+        {error && (
+          <div className="inline-flex items-center gap-2 text-sm text-rose-600 dark:text-rose-400 bg-rose-500/10 border border-rose-500/30 px-3 py-2 rounded-lg w-full">
+            <InfoIcon className="text-base" /> {error}
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 border-t border-border px-5 md:px-6 py-4 flex flex-wrap items-center gap-2">
+        <button onClick={handleSave} disabled={saving} className="rs-btn rs-btn-primary">
+          <CheckIcon /> {saving ? "Saving…" : "Save & reschedule"}
+        </button>
+        {hasCustom && <button onClick={handleReset} disabled={saving} className="rs-btn rs-btn-outline">Reset to default</button>}
+        <button onClick={onClose} className="rs-btn rs-btn-ghost ml-auto">Cancel</button>
+      </div>
+    </ModalShell>
   );
 }
