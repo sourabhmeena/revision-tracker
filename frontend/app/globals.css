@@ -276,10 +276,13 @@ body::before {
     transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
                 box-shadow 0.35s ease, border-color 0.35s ease;
   }
-  .rs-card-hover:hover {
-    transform: translateY(-5px) scale(1.006);
-    box-shadow: var(--shadow-float-lg), inset 0 1px 0 var(--glass-hi);
-    border-color: var(--glass-brd);
+  /* Only lift on devices with a real pointer — avoids "sticky hover" on touch. */
+  @media (hover: hover) {
+    .rs-card-hover:hover {
+      transform: translateY(-5px) scale(1.006);
+      box-shadow: var(--shadow-float-lg), inset 0 1px 0 var(--glass-hi);
+      border-color: var(--glass-brd);
+    }
   }
   /* Opt-out: a fully opaque surface (e.g. when blur would hurt readability) */
   .rs-card-solid {
@@ -329,26 +332,29 @@ body::before {
     background-image: linear-gradient(135deg, var(--grad-1), var(--grad-2) 55%, var(--grad-3));
     box-shadow: var(--shadow-primary);
   }
-  .rs-btn-primary:hover { box-shadow: 0 16px 34px -10px rgba(109, 40, 217, 0.55); }
-
   .rs-btn-soft {
     color: var(--primary);
     background: var(--primary-soft);
   }
-  .rs-btn-soft:hover { background: color-mix(in oklab, var(--primary-soft) 80%, var(--primary) 8%); }
 
   .rs-btn-ghost {
     color: var(--muted);
     background: transparent;
   }
-  .rs-btn-ghost:hover { background: var(--surface-2); color: var(--text); }
 
   .rs-btn-outline {
     color: var(--text);
     background: var(--surface);
     border: 1px solid var(--border-strong);
   }
-  .rs-btn-outline:hover { background: var(--surface-2); }
+
+  /* Button hovers — pointer devices only (touch uses :active press feedback). */
+  @media (hover: hover) {
+    .rs-btn-primary:hover { box-shadow: 0 16px 34px -10px rgba(109, 40, 217, 0.55); }
+    .rs-btn-soft:hover { background: color-mix(in oklab, var(--primary-soft) 80%, var(--primary) 8%); }
+    .rs-btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+    .rs-btn-outline:hover { background: var(--surface-2); }
+  }
 
   /* Inputs */
   .rs-input {
