@@ -9,6 +9,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import InputModal from "../../components/InputModal";
 import CountUp from "../../components/CountUp";
 import ProgressBar from "../../components/ProgressBar";
+import TiltCard from "../../components/TiltCard";
 import { API } from "../api";
 import useAuth from "../useAuth";
 import { useTopics, refreshAll } from "../../hooks/useAPI";
@@ -278,7 +279,7 @@ export default function TopicsPage() {
         ) : (
           <motion.div variants={staggerContainer} initial="hidden" animate="show" className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
             {filteredTopics.map((topic) => (
-              <motion.div key={topic.id} variants={fadeUpSm} layout className="rs-card rs-card-hover p-5 flex flex-col h-full">
+              <TiltCard key={topic.id} max={6} variants={fadeUpSm} className="rs-card rs-card-hover p-5 flex flex-col h-full">
                 {editingId === topic.id ? (
                   <div className="flex flex-col gap-2.5">
                     <input autoFocus value={editTitle} onChange={(e) => setEditTitle(e.target.value)}
@@ -331,7 +332,7 @@ export default function TopicsPage() {
                     </div>
                   </>
                 )}
-              </motion.div>
+              </TiltCard>
             ))}
           </motion.div>
         )}

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import CountUp from "./CountUp";
+import TiltCard from "./TiltCard";
 import { FlameIcon, TrophyIcon, TargetIcon } from "./icons";
 import { fadeUp } from "../lib/motion";
 
@@ -23,11 +24,13 @@ export default function StreakDisplay({
   const active = currentStreak > 0;
 
   return (
-    <motion.div
+    <TiltCard
+      max={6}
+      glare={false}
       variants={fadeUp}
       initial="hidden"
       animate="show"
-      className="relative overflow-hidden rounded-[var(--radius-xl)] p-5 md:p-6 text-white shadow-[var(--shadow-lg)]"
+      className="relative overflow-hidden rounded-[var(--radius-xl)] p-5 md:p-6 text-white shadow-[var(--shadow-float-lg)]"
       style={{ background: "linear-gradient(135deg, #f59e0b 0%, #f43f5e 45%, #7c3aed 100%)" }}
     >
       {/* soft light blooms */}
@@ -94,6 +97,6 @@ export default function StreakDisplay({
           </div>
         </div>
       )}
-    </motion.div>
+    </TiltCard>
   );
 }

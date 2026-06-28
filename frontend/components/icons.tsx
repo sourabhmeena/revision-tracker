@@ -88,6 +88,9 @@ export const LogoutIcon = (p: P) => (
 export const BoltIcon = (p: P) => (<S {...p}><path d="M13 2 4 13.5h6L9 22l10-12h-6l1-8Z" /></S>);
 export const TrendingUpIcon = (p: P) => (<S {...p}><path d="M3 17l6-6 4 4 8-8M21 7v5M21 7h-5" /></S>);
 export const InfoIcon = (p: P) => (<S {...p}><circle cx="12" cy="12" r="8.4" /><path d="M12 11v5M12 8h.01" /></S>);
+export const BellIcon = (p: P) => (
+  <S {...p}><path d="M6 9a6 6 0 1 1 12 0c0 4 1.2 5.5 2 6.5H4c.8-1 2-2.5 2-6.5Z" /><path d="M9.5 19a2.5 2.5 0 0 0 5 0" /></S>
+);
 export const RefreshIcon = (p: P) => (
   <S {...p}><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8L21 9M21 4v5h-5M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3 15M3 20v-5h5" /></S>
 );

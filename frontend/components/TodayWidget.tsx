@@ -7,6 +7,7 @@ import { staggerContainer, fadeUp, fadeUpSm, springSnappy } from "../lib/motion"
 import { chipStyle } from "../lib/category";
 import ProgressRing from "./ProgressRing";
 import CompletionCelebration from "./CompletionCelebration";
+import TiltCard from "./TiltCard";
 import { CheckIcon, SparklesIcon, CheckCircleIcon } from "./icons";
 
 const haptic = () => {
@@ -67,7 +68,8 @@ export default function TodayWidget() {
     <>
       <CompletionCelebration show={celebrate} onClose={() => setCelebrate(false)} />
 
-      <motion.section
+      <TiltCard
+        max={5}
         variants={fadeUp}
         initial="hidden"
         animate="show"
@@ -198,7 +200,7 @@ export default function TodayWidget() {
             </motion.ul>
           )}
         </div>
-      </motion.section>
+      </TiltCard>
     </>
   );
 }

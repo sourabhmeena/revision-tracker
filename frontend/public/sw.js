@@ -3,7 +3,7 @@
 // Bump CACHE_NAME on any deploy that needs to invalidate the cache.
 // The activate handler purges every cache that isn't in the whitelist,
 // so old hashed JS bundles don't stick around and serve stale code.
-const CACHE_NAME = 'revision-planner-v2';
+const CACHE_NAME = 'revision-planner-v5';
 
 const urlsToCache = [
   '/',
@@ -47,6 +47,37 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => caches.match(event.request))
+  );
+});
+
+// Notification click — focus an existing tab (and route it) or open one.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) {
+        if ('focus' in w) {
+          if ('navigate' in w) { w.navigate(url).catch(() => {}); }
+          return w.focus();
+        }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(url);
+    })
+  );
+});
+
+// Push — server-sent reminders (optional; works if a backend ever sends Web Push).
+self.addEventListener('push', (event) => {
+  let payload = {};
+  try { payload = event.data ? event.data.json() : {}; } catch (e) { payload = {}; }
+  event.waitUntil(
+    self.registration.showNotification(payload.title || 'Time to revise', {
+      body: payload.body || 'Your revisions are waiting — keep your streak alive.',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      data: { url: payload.url || '/list' },
+    })
   );
 });
 

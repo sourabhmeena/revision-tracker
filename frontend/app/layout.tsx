@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import PWARegister from "../components/PWARegister";
 import Providers from "../components/Providers";
+import ReminderScheduler from "../components/ReminderScheduler";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
@@ -53,6 +54,7 @@ export default function RootLayout({
       <body className={`${jakarta.variable} antialiased`} suppressHydrationWarning>
         <Providers>
           <PWARegister />
+          <ReminderScheduler />
           <div className="bg-orbs" aria-hidden="true">
             <span className="orb-1" />
             <span className="orb-2" />

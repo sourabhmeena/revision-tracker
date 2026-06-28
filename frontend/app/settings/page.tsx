@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import useSWR from "swr";
 import Navigation from "../../components/Navigation";
+import ReminderCard from "../../components/ReminderCard";
 import { API } from "../api";
 import useAuth from "../useAuth";
 import { useSettings, invalidateSettings } from "../../hooks/useAPI";
@@ -214,6 +215,10 @@ export default function SettingsPage() {
               )}
             </AnimatePresence>
           </motion.div>
+        </div>
+
+        <div className="mb-5">
+          <ReminderCard />
         </div>
 
         {loading ? (
