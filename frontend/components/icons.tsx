@@ -53,6 +53,9 @@ export const PencilIcon = (p: P) => (
 export const TrashIcon = (p: P) => (
   <S {...p}><path d="M4 7h16M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M6.5 7l.7 12a2 2 0 0 0 2 1.9h5.6a2 2 0 0 0 2-1.9L17.5 7M10 11v6M14 11v6" /></S>
 );
+export const CopyIcon = (p: P) => (
+  <S {...p}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></S>
+);
 export const ChevronLeft = (p: P) => (<S {...p}><path d="M14.5 5.5 8 12l6.5 6.5" /></S>);
 export const ChevronRight = (p: P) => (<S {...p}><path d="M9.5 5.5 16 12l-6.5 6.5" /></S>);
 export const ChevronDown = (p: P) => (<S {...p}><path d="M5.5 9 12 15.5 18.5 9" /></S>);

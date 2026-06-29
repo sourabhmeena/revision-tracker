@@ -80,6 +80,48 @@ class Topic(Base):
         return None
 
 
+class ScheduleBlock(Base):
+    """A recurring time block on a weekly schedule template.
+
+    Tied to a weekday (0=Mon … 6=Sun) rather than a calendar date, so a day's
+    blocks can be copied onto other weekdays (weekdays / weekends / all).
+    """
+
+    __tablename__ = "schedule_blocks"
+    __table_args__ = (
+        Index("ix_schedule_user_weekday", "user_id", "weekday"),
+    )
+
+    id = Column(String, primary_key=True, default=uid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    weekday = Column(Integer, nullable=False)  # 0=Mon … 6=Sun
+    start_time = Column(String, nullable=False)  # "HH:MM"
+    end_time = Column(String, nullable=False)    # "HH:MM"
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    color = Column(String, nullable=True)        # hex swatch, e.g. "#6366f1"
+
+
+class BlockCompletion(Base):
+    """Marks a recurring schedule block done on a specific calendar date.
+
+    Presence of a row = completed. Toggling off deletes the row. The block is a
+    weekly template; this pins completion to one real date so weekly reports can
+    track what actually got done.
+    """
+
+    __tablename__ = "block_completions"
+    __table_args__ = (
+        Index("ix_completion_user_date", "user_id", "date"),
+        Index("ix_completion_block_date", "block_id", "date"),
+    )
+
+    id = Column(String, primary_key=True, default=uid)
+    user_id = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    block_id = Column(String, ForeignKey("schedule_blocks.id"), nullable=False, index=True)
+    date = Column(Date, nullable=False)
+
+
 class Revision(Base):
     __tablename__ = "revisions"
     __table_args__ = (

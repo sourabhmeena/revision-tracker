@@ -39,6 +39,21 @@ export interface TopicSummary {
   repeat_interval: number;
 }
 
+export interface ScheduleBlock {
+  id: string;
+  weekday: number; // 0=Mon … 6=Sun
+  start_time: string; // "HH:MM"
+  end_time: string; // "HH:MM"
+  title: string;
+  description: string | null;
+  color: string | null;
+}
+
+export interface BlockCompletion {
+  block_id: string;
+  date: string; // ISO "YYYY-MM-DD"
+}
+
 export interface StreakData {
   current_streak: number;
   longest_streak: number;

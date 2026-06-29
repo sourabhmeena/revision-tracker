@@ -1,6 +1,6 @@
 import useSWR, { mutate } from "swr";
 import { API } from "../app/api";
-import type { TopicSummary, RevisionListItem, StreakData, ModalData } from "../app/types";
+import type { TopicSummary, RevisionListItem, StreakData, ModalData, ScheduleBlock, BlockCompletion } from "../app/types";
 
 const fetcher = (url: string) => API.get(url).then((r) => r.data);
 
@@ -32,6 +32,18 @@ interface SettingsData {
 
 export function useSettings() {
   return useSWR<SettingsData>("/settings", fetcher);
+}
+
+export function useSchedule() {
+  return useSWR<ScheduleBlock[]>("/schedule", fetcher);
+}
+
+export function statusKey(start: string, end: string) {
+  return `/schedule/status?start=${start}&end=${end}`;
+}
+
+export function useScheduleStatus(start: string, end: string) {
+  return useSWR<BlockCompletion[]>(statusKey(start, end), fetcher);
 }
 
 export function useTodayRevisions() {

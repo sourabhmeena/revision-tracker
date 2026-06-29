@@ -13,15 +13,21 @@ from sqlalchemy.orm import Session, subqueryload
 
 try:
     from .database import engine, SessionLocal, DATABASE_URL
-    from .models import Base, Topic, Revision, User
-    from .schemas import TopicCreate, TopicUpdate, UserLogin, UserRegister, SettingsUpdate, TopicScheduleUpdate
+    from .models import Base, Topic, Revision, User, ScheduleBlock, BlockCompletion
+    from .schemas import (
+        TopicCreate, TopicUpdate, UserLogin, UserRegister, SettingsUpdate, TopicScheduleUpdate,
+        ScheduleBlockCreate, ScheduleBlockUpdate, ScheduleCopy, CompletionToggle,
+    )
     from .scheduler import generate_revisions, extend_revisions, DEFAULT_INTERVALS, DEFAULT_REPEAT
     from .utils import format_date, year_progress
     from .streak_calculator import calculate_streaks, get_next_milestone
 except ImportError:
     from database import engine, SessionLocal, DATABASE_URL
-    from models import Base, Topic, Revision, User
-    from schemas import TopicCreate, TopicUpdate, UserLogin, UserRegister, SettingsUpdate, TopicScheduleUpdate
+    from models import Base, Topic, Revision, User, ScheduleBlock, BlockCompletion
+    from schemas import (
+        TopicCreate, TopicUpdate, UserLogin, UserRegister, SettingsUpdate, TopicScheduleUpdate,
+        ScheduleBlockCreate, ScheduleBlockUpdate, ScheduleCopy, CompletionToggle,
+    )
     from scheduler import generate_revisions, extend_revisions, DEFAULT_INTERVALS, DEFAULT_REPEAT
     from utils import format_date, year_progress
     from streak_calculator import calculate_streaks, get_next_milestone
@@ -701,6 +707,251 @@ def reset_topic_schedule(topic_id: str, db: Session = Depends(get_db), user_id: 
         "repeat_interval": repeat,
         "has_custom_schedule": False,
     }
+
+
+# ------------------------------------------
+# Weekly schedule (day / week / month planner)
+# ------------------------------------------
+
+_HHMM = "%H:%M"
+
+
+def _valid_hhmm(s: str) -> bool:
+    try:
+        datetime.strptime(s, _HHMM)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
+def _serialize_block(b: ScheduleBlock) -> dict:
+    return {
+        "id": b.id,
+        "weekday": b.weekday,
+        "start_time": b.start_time,
+        "end_time": b.end_time,
+        "title": b.title,
+        "description": b.description,
+        "color": b.color,
+    }
+
+
+def _validate_block(weekday: int, start: str, end: str, title: str):
+    if weekday < 0 or weekday > 6:
+        raise HTTPException(status_code=400, detail="weekday must be 0–6 (Mon–Sun)")
+    if not _valid_hhmm(start) or not _valid_hhmm(end):
+        raise HTTPException(status_code=400, detail="start_time/end_time must be HH:MM")
+    if end <= start:
+        raise HTTPException(status_code=400, detail="end_time must be after start_time")
+    if not title or not title.strip():
+        raise HTTPException(status_code=400, detail="title is required")
+
+
+# Two ranges overlap when each starts before the other ends. HH:MM strings
+# compare lexicographically, so plain < works.
+def _overlapping_block(db: Session, user_id: str, weekday: int, start: str, end: str, exclude_id: str | None = None):
+    q = (
+        db.query(ScheduleBlock)
+        .filter(
+            ScheduleBlock.user_id == user_id,
+            ScheduleBlock.weekday == weekday,
+            ScheduleBlock.start_time < end,
+            ScheduleBlock.end_time > start,
+        )
+    )
+    if exclude_id:
+        q = q.filter(ScheduleBlock.id != exclude_id)
+    return q.first()
+
+
+_DAY_NAMES = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+
+def _reject_overlap(db: Session, user_id: str, weekday: int, start: str, end: str, exclude_id: str | None = None):
+    clash = _overlapping_block(db, user_id, weekday, start, end, exclude_id)
+    if clash:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Overlaps “{clash.title}” ({clash.start_time}–{clash.end_time}) on {_DAY_NAMES[weekday]}",
+        )
+
+
+@app.get("/schedule")
+def list_schedule(db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    blocks = (
+        db.query(ScheduleBlock)
+        .filter(ScheduleBlock.user_id == user_id)
+        .order_by(ScheduleBlock.weekday.asc(), ScheduleBlock.start_time.asc())
+        .all()
+    )
+    return [_serialize_block(b) for b in blocks]
+
+
+@app.post("/schedule")
+def create_block(payload: ScheduleBlockCreate, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    _validate_block(payload.weekday, payload.start_time, payload.end_time, payload.title)
+    _reject_overlap(db, user_id, payload.weekday, payload.start_time, payload.end_time)
+    block = ScheduleBlock(
+        user_id=user_id,
+        weekday=payload.weekday,
+        start_time=payload.start_time,
+        end_time=payload.end_time,
+        title=payload.title.strip(),
+        description=(payload.description or None),
+        color=(payload.color or None),
+    )
+    db.add(block)
+    db.commit()
+    db.refresh(block)
+    return _serialize_block(block)
+
+
+@app.patch("/schedule/{block_id}")
+def update_block(block_id: str, payload: ScheduleBlockUpdate, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    block = db.query(ScheduleBlock).filter(ScheduleBlock.id == block_id, ScheduleBlock.user_id == user_id).first()
+    if not block:
+        raise HTTPException(status_code=404, detail="Schedule block not found")
+
+    weekday = payload.weekday if payload.weekday is not None else block.weekday
+    start = payload.start_time if payload.start_time is not None else block.start_time
+    end = payload.end_time if payload.end_time is not None else block.end_time
+    title = payload.title if payload.title is not None else block.title
+    _validate_block(weekday, start, end, title)
+    _reject_overlap(db, user_id, weekday, start, end, exclude_id=block_id)
+
+    block.weekday = weekday
+    block.start_time = start
+    block.end_time = end
+    block.title = title.strip()
+    if payload.description is not None:
+        block.description = payload.description or None
+    if payload.color is not None:
+        block.color = payload.color or None
+
+    db.commit()
+    db.refresh(block)
+    return _serialize_block(block)
+
+
+@app.delete("/schedule/{block_id}")
+def delete_block(block_id: str, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    block = db.query(ScheduleBlock).filter(ScheduleBlock.id == block_id, ScheduleBlock.user_id == user_id).first()
+    if not block:
+        raise HTTPException(status_code=404, detail="Schedule block not found")
+    db.query(BlockCompletion).filter(BlockCompletion.block_id == block_id).delete(synchronize_session="fetch")
+    db.delete(block)
+    db.commit()
+    return {"message": "Block deleted", "id": block_id}
+
+
+@app.post("/schedule/copy")
+def copy_schedule(payload: ScheduleCopy, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    """Copy every block from `source` weekday onto each `targets` weekday."""
+    if payload.source < 0 or payload.source > 6:
+        raise HTTPException(status_code=400, detail="source must be 0–6")
+    targets = [t for t in dict.fromkeys(payload.targets) if 0 <= t <= 6 and t != payload.source]
+    if not targets:
+        raise HTTPException(status_code=400, detail="No valid target days")
+
+    source_blocks = (
+        db.query(ScheduleBlock)
+        .filter(ScheduleBlock.user_id == user_id, ScheduleBlock.weekday == payload.source)
+        .all()
+    )
+
+    if payload.replace:
+        doomed = [
+            r[0] for r in db.query(ScheduleBlock.id).filter(
+                ScheduleBlock.user_id == user_id, ScheduleBlock.weekday.in_(targets),
+            ).all()
+        ]
+        if doomed:
+            db.query(BlockCompletion).filter(BlockCompletion.block_id.in_(doomed)).delete(synchronize_session="fetch")
+        db.query(ScheduleBlock).filter(
+            ScheduleBlock.user_id == user_id,
+            ScheduleBlock.weekday.in_(targets),
+        ).delete(synchronize_session="fetch")
+
+    created = 0
+    skipped = 0
+    for t in targets:
+        # In append mode, seed occupied ranges from blocks already on the day so
+        # copies can't overlap them; replace mode cleared the day, so it's empty.
+        occupied: list[tuple[str, str]] = []
+        if not payload.replace:
+            occupied = [
+                (s, e) for s, e in db.query(ScheduleBlock.start_time, ScheduleBlock.end_time)
+                .filter(ScheduleBlock.user_id == user_id, ScheduleBlock.weekday == t).all()
+            ]
+        for b in source_blocks:
+            if any(b.start_time < oe and b.end_time > os for os, oe in occupied):
+                skipped += 1
+                continue
+            db.add(ScheduleBlock(
+                user_id=user_id, weekday=t,
+                start_time=b.start_time, end_time=b.end_time,
+                title=b.title, description=b.description, color=b.color,
+            ))
+            occupied.append((b.start_time, b.end_time))
+            created += 1
+
+    db.commit()
+    blocks = (
+        db.query(ScheduleBlock)
+        .filter(ScheduleBlock.user_id == user_id)
+        .order_by(ScheduleBlock.weekday.asc(), ScheduleBlock.start_time.asc())
+        .all()
+    )
+    msg = f"Copied {created} block(s) to {len(targets)} day(s)"
+    if skipped:
+        msg += f" · skipped {skipped} overlapping"
+    return {
+        "message": msg,
+        "created": created,
+        "skipped": skipped,
+        "blocks": [_serialize_block(b) for b in blocks],
+    }
+
+
+@app.get("/schedule/status")
+def schedule_status(start: str, end: str, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    """Completed block-instances within [start, end] (inclusive ISO dates)."""
+    try:
+        s = date.fromisoformat(start)
+        e = date.fromisoformat(end)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="start/end must be YYYY-MM-DD")
+    rows = (
+        db.query(BlockCompletion)
+        .filter(BlockCompletion.user_id == user_id, BlockCompletion.date >= s, BlockCompletion.date <= e)
+        .all()
+    )
+    return [{"block_id": r.block_id, "date": r.date.isoformat()} for r in rows]
+
+
+@app.put("/schedule/completion")
+def toggle_completion(payload: CompletionToggle, db: Session = Depends(get_db), user_id: str = Depends(get_current_user)):
+    block = db.query(ScheduleBlock).filter(ScheduleBlock.id == payload.block_id, ScheduleBlock.user_id == user_id).first()
+    if not block:
+        raise HTTPException(status_code=404, detail="Schedule block not found")
+    try:
+        d = date.fromisoformat(payload.date)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="date must be YYYY-MM-DD")
+
+    existing = (
+        db.query(BlockCompletion)
+        .filter(BlockCompletion.block_id == payload.block_id, BlockCompletion.date == d)
+        .first()
+    )
+    if payload.completed and not existing:
+        db.add(BlockCompletion(user_id=user_id, block_id=payload.block_id, date=d))
+        db.commit()
+    elif not payload.completed and existing:
+        db.delete(existing)
+        db.commit()
+
+    return {"block_id": payload.block_id, "date": payload.date, "completed": payload.completed}
 
 
 # ------------------------------------------
