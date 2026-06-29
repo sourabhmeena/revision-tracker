@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import {
-  getPrefs, permission, scheduleReminder, fireNow, markFiredToday, firedToday,
+  getPrefs, permission, scheduleReminder, fireNow, markFiredSlot, firedSlotToday,
 } from "../lib/notifications";
 
 /**
@@ -19,7 +19,7 @@ export default function ReminderScheduler() {
 
     const arm = () => {
       const p = getPrefs();
-      if (p.enabled && permission() === "granted") scheduleReminder(p.time);
+      if (p.enabled && permission() === "granted") scheduleReminder(p.times);
     };
     arm();
 
@@ -30,9 +30,9 @@ export default function ReminderScheduler() {
       const p = getPrefs();
       if (!p.enabled || permission() !== "granted") return;
       const now = new Date();
-      const [h, m] = p.time.split(":").map(Number);
-      if (now.getHours() === h && now.getMinutes() === m && !firedToday()) {
-        markFiredToday();
+      const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      if (p.times.includes(hhmm) && !firedSlotToday(hhmm)) {
+        markFiredSlot(hhmm);
         fireNow();
       }
     };

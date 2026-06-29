@@ -5,13 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { fadeUp } from "../lib/motion";
 import {
   getPrefs, setPrefs, requestPermission, scheduleReminder, clearScheduled,
-  showTest, notificationsSupported, triggersSupported, permission,
+  showTest, notificationsSupported, triggersSupported, permission, normalizeTimes,
 } from "../lib/notifications";
-import { BellIcon, CheckCircleIcon, InfoIcon, SparklesIcon } from "./icons";
+import { BellIcon, CheckCircleIcon, InfoIcon, SparklesIcon, PlusIcon, XIcon } from "./icons";
 
 export default function ReminderCard() {
   const [enabled, setEnabled] = useState(false);
-  const [time, setTime] = useState("19:00");
+  const [times, setTimes] = useState<string[]>(["19:00"]);
   const [supported, setSupported] = useState(true);
   const [triggers, setTriggers] = useState(true);
   const [perm, setPerm] = useState<NotificationPermission>("default");
@@ -21,7 +21,7 @@ export default function ReminderCard() {
   useEffect(() => {
     const p = getPrefs();
     setEnabled(p.enabled);
-    setTime(p.time);
+    setTimes(p.times);
     setSupported(notificationsSupported());
     setTriggers(triggersSupported());
     setPerm(permission());
@@ -48,29 +48,47 @@ export default function ReminderCard() {
           return;
         }
         setEnabled(true);
-        setPrefs({ enabled: true, time });
-        await scheduleReminder(time);
+        setPrefs({ enabled: true, times });
+        await scheduleReminder(times);
         flash("success", triggersSupported()
-          ? `Daily reminder set for ${time}. It'll reach you even when the app is closed.`
-          : `Daily reminder set for ${time}. It fires while the app is open on this browser.`);
+          ? `Reminders set for ${times.join(", ")}. They'll reach you even when the app is closed.`
+          : `Reminders set for ${times.join(", ")}. They fire while the app is open on this browser.`);
       } else {
         setEnabled(false);
-        setPrefs({ enabled: false, time });
+        setPrefs({ enabled: false, times });
         await clearScheduled();
-        flash("info", "Daily reminder turned off.");
+        flash("info", "Reminders turned off.");
       }
     } finally {
       setBusy(false);
     }
   };
 
-  const onTimeChange = async (value: string) => {
-    setTime(value);
-    setPrefs({ enabled, time: value });
+  // Persist + reschedule whenever the list of times changes.
+  const applyTimes = async (next: string[]) => {
+    const norm = normalizeTimes(next);
+    const list = norm.length ? norm : ["19:00"];
+    setTimes(list);
+    setPrefs({ enabled, times: list });
     if (enabled && perm === "granted") {
-      await scheduleReminder(value);
-      flash("success", `Reminder time updated to ${value}.`);
+      await scheduleReminder(list);
+      flash("success", `Reminder times updated: ${list.join(", ")}.`);
     }
+  };
+
+  const onTimeChange = (index: number, value: string) =>
+    applyTimes(times.map((t, i) => (i === index ? value : t)));
+  const addTime = () => {
+    if (times.length >= 6) { flash("info", "That's plenty — max 6 reminders a day."); return; }
+    // Default a new slot a few hours after the last one (wrapped to the day).
+    const last = times[times.length - 1] || "19:00";
+    const [h, m] = last.split(":").map(Number);
+    const nh = String((h + 3) % 24).padStart(2, "0");
+    applyTimes([...times, `${nh}:${String(m).padStart(2, "0")}`]);
+  };
+  const removeTime = (index: number) => {
+    if (times.length <= 1) return;
+    applyTimes(times.filter((_, i) => i !== index));
   };
 
   return (
@@ -112,18 +130,38 @@ export default function ReminderCard() {
             initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center gap-3">
-              <label htmlFor="reminder-time" className="text-sm font-semibold text-text">Remind me at</label>
-              <input
-                id="reminder-time"
-                type="time"
-                value={time}
-                onChange={(e) => onTimeChange(e.target.value)}
-                className="rs-input w-auto font-bold rs-tabular"
-              />
-              <button onClick={() => showTest()} className="rs-btn rs-btn-soft ml-auto text-sm min-h-0 h-10">
-                <SparklesIcon /> Send test
-              </button>
+            <div className="mt-4 pt-4 border-t border-border">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <label className="text-sm font-semibold text-text">Remind me at</label>
+                <button onClick={() => showTest()} className="rs-btn rs-btn-soft text-sm min-h-0 h-10">
+                  <SparklesIcon /> Send test
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {times.map((t, i) => (
+                  <div key={i} className="inline-flex items-center gap-1.5 rounded-xl bg-surface-2 pl-2 pr-1 py-1">
+                    <input
+                      type="time"
+                      value={t}
+                      onChange={(e) => onTimeChange(i, e.target.value)}
+                      className="rs-input w-auto font-bold rs-tabular bg-transparent border-0 px-1 min-h-0 h-9"
+                    />
+                    {times.length > 1 && (
+                      <button onClick={() => removeTime(i)} aria-label="Remove reminder time"
+                        className="grid place-items-center w-7 h-7 rounded-lg text-faint hover:text-rose-500 hover:bg-rose-500/10 transition-colors">
+                        <XIcon />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {times.length < 6 && (
+                  <button onClick={addTime}
+                    className="inline-flex items-center gap-1.5 rounded-xl border-2 border-dashed border-border-strong px-3 h-11 text-sm font-semibold text-muted hover:border-primary hover:text-primary transition-colors">
+                    <PlusIcon /> Add time
+                  </button>
+                )}
+              </div>
+              <p className="mt-2 text-xs text-muted">Each reminder lists the revision topics still due that day.</p>
             </div>
             {!triggers && (
               <p className="mt-3 inline-flex items-start gap-1.5 text-xs text-muted">
